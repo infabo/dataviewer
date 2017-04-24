@@ -734,7 +734,7 @@ class RecordController extends AbstractController
 		$validRecords = $this->recordRepository->findByAdvancedConditions($filters, $sortField, $sortOrder, $limit, $this->storagePids);
 		$records = null;
 		$validRecordIds = array_column($validRecords, "uid");
-		
+
 		$cacheIdentifier = $this->getCacheIdentifier();
 		$this->pluginCacheService->setValidRecordIds($cacheIdentifier, $validRecordIds);
 
@@ -755,7 +755,7 @@ class RecordController extends AbstractController
 		{
 			$records = [];
 		}
-
+		
 		//////////////////////////////////////////////////////
 		// Signal-Slot for post-processing selected records //
 		//////////////////////////////////////////////////////

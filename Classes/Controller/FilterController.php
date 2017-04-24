@@ -83,11 +83,12 @@ class FilterController extends AbstractController
 	{
 		if(!$this->_checkTargetUid())
 			$this->_redirectToPid();
-			
+
 		if ($this->request->hasArgument("filters"))
 		{
 			// Prepare Filters
 			$filtersFromPost = $this->request->getArgument("filters");
+			$merge = true; 				// Merge Filters
 			$selected = [];
 			
 			foreach($filtersFromPost as $_fieldId=>$_fArray)
@@ -106,12 +107,24 @@ class FilterController extends AbstractController
 								$selected[] = $selectedOption;
 							}
 						}
+						else
+						{
+							// Option was not found in current filter,
+							// so we determine the setting, if we can
+							// merge it anyway with the previous selected
+							if($merge === true)
+							{
+								// We need to security check the selected option
+								$selectedOption["field_value"] = $_id;
+								$selected[] = $selectedOption;
+							}
+						}
 				}
 				
 			}
 			
 			$previousSelected = $this->filterSessionService->getSelectedOptions();
-			$selectedOptions = $this->_prepareSelectedOptionsArray($previousSelected, $selected);
+			$selectedOptions = $this->_prepareSelectedOptionsArray($previousSelected, $selected, $merge);
 
 			/////////////////////////////////////////////////////////////////
 			// Signal-Slot for the post-processing of the selected options //
@@ -170,14 +183,20 @@ class FilterController extends AbstractController
 	{
 		foreach($filters as $_fId=>$_filter)
 		{
-			$fieldId = (int)$_filter["field_id"];
-			$field   = $this->fieldRepository->findByUid($fieldId, true);
-
-			if ($field instanceof \MageDeveloper\Dataviewer\Domain\Model\Field)
-				$filters[$_fId]["field"] = $field;
+			$fieldId = $_filter["field_id"];
+			
+			if(is_numeric($fieldId))
+			{
+				$field   = $this->fieldRepository->findByUid($fieldId, true);
+				if ($field instanceof \MageDeveloper\Dataviewer\Domain\Model\Field)
+					$filters[$_fId]["field"] = $field;
+				else
+					unset($filters[$_fId]);	// We unset the filter, because we could'nt find the according field	
+			}
 			else
-				unset($filters[$_fId]);	// We unset the filter, because we could'nt find the according field	
-
+			{
+				$filters[$_fId]["field"] = $fieldId;
+			}
 		}
 	}
 
@@ -189,7 +208,7 @@ class FilterController extends AbstractController
 	protected function _getFilters()
 	{
 		$filters = $this->filterSettingsService->getFilters();
-
+		
 		// Fill in session data
 		foreach($filters as $i=>$_filter)
 		{
@@ -240,17 +259,17 @@ class FilterController extends AbstractController
 	 *
 	 * @param array $previousSelectedOptions
 	 * @param array $currentSelectedOptions
+	 * @param bool $merge 
 	 * @return array
 	 */
-	protected function _prepareSelectedOptionsArray(array $previousSelectedOptions = [], array $currentSelectedOptions = [])
+	protected function _prepareSelectedOptionsArray(array $previousSelectedOptions = [], array $currentSelectedOptions = [], $merge = false)
 	{
 		$selectedOptions = [];
-		
+
 		foreach($previousSelectedOptions as $i=>$_prvOpt)
 			foreach($currentSelectedOptions as $j=>$_curOpt)
 			{
-				if($_prvOpt["field_id"] == $_curOpt["field_id"]
-				)
+				if(($_prvOpt["field_id"] == $_curOpt["field_id"]) && $merge === false)
 				{
 					// Clean previous array
 					unset($previousSelectedOptions[$i]);
