@@ -143,29 +143,21 @@ class RecordRepository extends AbstractRepository
 		$querySettings->setRespectStoragePage(true);
 		$querySettings->setRespectSysLanguage(true);
 
-		$orderings = [];
-		foreach ($recordIds as $_id)
-			$orderings["title={$_id}"] = QueryInterface::ORDER_DESCENDING;
-
-		$query->setOrderings($orderings);
-
 		$records = $query->matching(
 			$query->in("uid", $recordIds)
 		)->execute();
 
-
 		// THIS IS A DIRTY FIX FOR MANUAL SORTING THE RECORDS BY THE INPUT RECORD IDS
 		// I HOPE THIS IS CHANGED SOON BECAUSE IT COSTS A LOT OF SPEED HERE
-		// THANKS TO DOCTRINE THE OLD FIX ABOVE BECAME INVALID :(
-		//$result = [];
-		//foreach($recordIds as $_recordId)
-		//{
-		//    foreach($records as $_record)
-		//        if($_record->getUid() == $_recordId)
-		//          $result[] = $_record;
-		//}
-
-		return $records;
+		$result = [];
+		foreach($recordIds as $_recordId)
+		{
+		    foreach($records as $_record)
+		        if($_record->getUid() == $_recordId)
+		          $result[] = $_record;
+		}
+		
+		return $result;
 	}
 
 	/**
@@ -284,6 +276,7 @@ class RecordRepository extends AbstractRepository
 		$query->statement($statement);
 		$result = $query->execute(true);
 
+
 		// Apply Sorting
 		if(is_numeric($sortField))
 		{
@@ -294,7 +287,7 @@ class RecordRepository extends AbstractRepository
 
 		if(is_numeric($sortField) && $sortOrder == QueryInterface::ORDER_DESCENDING)
 			$result=array_reverse($result, true);
-
+			
 		return $result;
 	}
 
