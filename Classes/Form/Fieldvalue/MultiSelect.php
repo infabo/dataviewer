@@ -30,24 +30,24 @@ class MultiSelect extends Select
 	 */
 	public function getFrontendValue()
 	{
-		$value = $this->getValue();
-		$ids = GeneralUtility::trimExplode(",", $value, true);
-		$table = $this->getField()->getConfig("foreign_table");
-		$modelClass = $this->getField()->getConfig("modelClass");
-			
-		$items = [];
-	
-		foreach($ids as $_id)
-		{
-			$item = $this->getItemById($_id, $table, $modelClass);
-			
-			if($item instanceof Record || is_array($item))
-				$items[] = $item;
-			else
-			    $items[] = $_id;	
-		}
-				
-		return $items;
+        $value = $this->getValue();
+        $ids = GeneralUtility::trimExplode(",", $value, true);
+        $table = $this->getForeignTable();
+        $modelClass = $this->getModelClass();
+
+        $items = [];
+
+        foreach($ids as $_id)
+        {
+            $item = $this->getItemById($_id, $table, $modelClass);
+
+            if(!$table)
+                $items = $ids;
+            else if($item instanceof Record || is_array($item))
+                $items[] = $item;
+        }
+
+        return $items;
 	}
 
 }
