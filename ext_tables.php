@@ -204,11 +204,6 @@ $GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["Backend\\Template\\Components\\Button
 $GLOBALS["TYPO3_CONF_VARS"]["SYS"]["formEngine"]["formDataGroup"]["inlineParentRecord"]["MageDeveloper\\Dataviewer\\Form\\FormDataProvider\\PrepareInlineTca"] = [];
 
 /**
- * We need to modify the formDataGroups for the TcaDatabaseRecord FormDataGroup to get the Category Element correctly to work
- */
-$GLOBALS["TYPO3_CONF_VARS"]["SYS"]["formEngine"]["formDataGroup"]["tcaDatabaseRecord"]["MageDeveloper\\Dataviewer\\Form\\FormDataProvider\\PrepareSelectTreeTca"] = [];
-
-/**
  * We need to inject the rendered tca of select/multiselect fields to the GLOBALS to restore compatibility to the suggest wizard
  */
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['extTablesInclusion-PostProcessing'][$_EXTKEY] = "MageDeveloper\\Dataviewer\\Hooks\\ExtTablesInclusion"; 
