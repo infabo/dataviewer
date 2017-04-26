@@ -19,6 +19,8 @@ Changelog
 - [BUGFIX] Sorting Records is now working properly with all plugins
 - [TASK] Filter Plugin can now filter on main record details (e.g. RECORD.title)
 - [TASK] Filter Plugin now merges filters from multiple filter plugins
+- [BUGFIX] Selected Categories are now shown as checked in the Category Box
+- [TASK] Added Suggest-Wizard to Page Selection in Template Variables
 
 **1.7.3**
 
