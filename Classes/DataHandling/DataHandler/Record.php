@@ -341,42 +341,46 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 		$recordValues = $this->recordValueRepository->findByRecordId($id);
 		if ($recordValues && $recordValues->count())
 		{
-
 			// Remove each record value
 			/* @var RecordValueModel $_recordValue */
 			foreach ( $recordValues as $_recordValue )
 			{
-				$_recordValue->setDeleted(true);
-				$this->recordValueRepository->update($_recordValue);
-
-				// We need to check the fieldtype to do certain delete behaviours here
-				switch ($_recordValue->getField()->getType())
+				if($_recordValue->getField() instanceof FieldModel) 
 				{
-					case "datatype":
-						$ids = GeneralUtility::trimExplode(",", $_recordValue->getValueContent());
 
-						foreach($ids as $_id)
-						{
-							$_record = $this->getRecordById($_id);
-							if($_record)
-							{
-								$_record->setDeleted(true);
-								$this->recordRepository->update($_record);
+					// We need to check the fieldtype to do certain delete behaviours here
+					switch ($_recordValue->getField()->getType()) {
+						case "datatype":
+							$ids = GeneralUtility::trimExplode(",", $_recordValue->getValueContent());
+
+							foreach ($ids as $_id) {
+								$_record = $this->getRecordById($_id);
+								if ($_record) {
+									$_record->setDeleted(true);
+									$this->recordRepository->update($_record);
+								}
 							}
-						}
-						break;
-					default:
-						break;
+							break;
+						default:
+							break;
+					}
+
+					$_recordValue->setDeleted(true);
+					$this->recordValueRepository->update($_recordValue);
 				}
 			}
 
 		}
 
 		// Deleting the main record
+		// The record is possibly not existing here
 		$record = $this->getRecordById($id);
-		$record->setDeleted(true);
-		$this->recordRepository->update($record);
-
+		if($record)
+		{
+			$record->setDeleted(true);
+			$this->recordRepository->update($record);
+		}
+		
 		$this->persistenceManager->persistAll();
 
 		// Hook

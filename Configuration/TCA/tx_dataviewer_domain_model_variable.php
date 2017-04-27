@@ -241,6 +241,11 @@ return [
 				'size' => 1,
 				'maxitems' => 1,
 				'multiple' => 0,
+				'wizards' => [
+					'suggest' => [
+						'type' => 'suggest',
+					],
+				],
 			],
 		],
 		'record' => [

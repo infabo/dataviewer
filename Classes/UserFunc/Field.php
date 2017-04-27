@@ -155,11 +155,22 @@ class Field
 
 		$fields = $this->fieldRepository->findAll(false);
 
+		$sorted = [];
 		foreach($fields as $_field)
 		{
 			$pid = $_field->getPid();
-			$label = $this->_getFieldLabel($_field);
-			$options[] = [$label, $_field->getUid()];
+			$sorted[$pid][] = $_field;
+		}
+		
+		ksort($sorted);
+		
+		foreach($sorted as $pid)
+		{
+			foreach($pid as $_field)
+			{
+				$label = $this->_getFieldLabel($_field);
+				$options[] = [$label, $_field->getUid()];
+			}
 		}
 
 		$config["items"] = array_merge($config["items"], $options);

@@ -32,7 +32,9 @@ class Category extends Select
 	{
 		$this->formDataProviders[] = \TYPO3\CMS\Backend\Form\FormDataProvider\DatabaseRowDefaultValues::class;
 		$this->formDataProviders[] = \TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectItems::class;
-		$this->formDataProviders[] = \TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectTreeItems::class;
+		//$this->formDataProviders[] = \TYPO3\CMS\Backend\Form\FormDataProvider\TcaSelectTreeItems::class;
+		$this->formDataProviders[] = \MageDeveloper\Dataviewer\Form\FormDataProvider\PrepareSelectTreeTca::class;
+
 		parent::initializeFormDataProviders();
 	}
 

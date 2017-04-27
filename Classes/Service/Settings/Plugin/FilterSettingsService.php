@@ -26,7 +26,6 @@ class FilterSettingsService extends PluginSettingsService
 		$filterRawArray 	= $this->getSettingByCode("field_filter");
 		$optionsRawArray 	= $this->getOptions();
 		$filterArray = [];
-		
 		if(is_array($filterRawArray))
 		{
 			foreach($filterRawArray as $_filter)
