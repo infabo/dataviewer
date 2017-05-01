@@ -11,6 +11,10 @@
 Changelog
 ---------
 
+**1.7.5**
+
+- [BUGFIX] Special Inline Elements will now be loaded
+
 **1.7.4**
 
 - [BUGFIX] Deleting Records is now working correctly
