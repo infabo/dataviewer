@@ -50,6 +50,7 @@ class Select extends AbstractFieldvalue implements FieldvalueInterface
 	public function getItemById($id, $table, $modelClass = null)
 	{
         $item = null;
+        $fetchArray = false;
         if(!is_null($modelClass) && $modelClass !== "")
         {
             $repoClassName 	= \TYPO3\CMS\Core\Utility\ClassNamingUtility::translateModelNameToRepositoryName($modelClass);
@@ -68,11 +69,13 @@ class Select extends AbstractFieldvalue implements FieldvalueInterface
                 }
             }
         }
-        else
+
+        // Try to load an array item
+        if(!$item || is_null($item))
         {
             try
             {
-                $item = BackendUtility::getRecord($table, $id, "*", "hidden = 0", true);
+                $item = BackendUtility::getRecord($table, $id, "*", " AND hidden = 0", true);
             }
             catch (\Exception $e) {	}
         }
@@ -114,7 +117,7 @@ class Select extends AbstractFieldvalue implements FieldvalueInterface
                 {
                     $searchParams[] = $_id;
 
-                    $record = BackendUtility::getRecord($foreignTable, $_id, "*", "hidden = 0");
+                    $record = BackendUtility::getRecord($foreignTable, $_id, "*", " AND hidden = 0");
                     if(is_array($record))
                     {
                         $searchFields = $GLOBALS["TCA"][$foreignTable]["ctrl"]["searchFields"];
@@ -177,7 +180,7 @@ class Select extends AbstractFieldvalue implements FieldvalueInterface
 			// We check the tca configuration, if we can find the searchFields field
 			if(isset($GLOBALS["TCA"][$foreignTable]["ctrl"]["searchFields"]))
 			{
-				$record = BackendUtility::getRecord($foreignTable, $value, "*", "hidden = 0");
+				$record = BackendUtility::getRecord($foreignTable, $value, "*", " AND hidden = 0");
 				if(is_array($record))
 				{
 					$searchFields = $GLOBALS["TCA"][$foreignTable]["ctrl"]["searchFields"];
