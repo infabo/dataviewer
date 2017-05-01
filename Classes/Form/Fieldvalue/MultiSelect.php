@@ -34,15 +34,17 @@ class MultiSelect extends Select
         $ids = GeneralUtility::trimExplode(",", $value, true);
         $table = $this->getForeignTable();
         $modelClass = $this->getModelClass();
-
+        
         $items = [];
 
         foreach($ids as $_id)
         {
             $item = $this->getItemById($_id, $table, $modelClass);
 
-            if(!$table)
+            if(!$table) {
                 $items = $ids;
+                break;
+            }
             else if($item instanceof Record || is_array($item))
                 $items[] = $item;
         }
