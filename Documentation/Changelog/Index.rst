@@ -7,13 +7,19 @@
         
         .. _donate now: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=HQP7AJZXJEWMQ&item_name=DataViewer-Support
 
-
 Changelog
 ---------
 
 **1.7.5**
 
 - [BUGFIX] Special Inline Elements will now be loaded
+- [TASK] Sorting of Fields by Type in Datatype Configuration
+- [TASK] Using enableFields for requesting Objects/Arrays in Select, Multiselect and Inline Fields
+- [TASK] Caching of the Record List contains now only Valid Record Ids instead of rendered content
+- [TASK] A record value is now initialized only on request for speed improvement
+- [BUGFIX] Sorting when cache is enabled
+- [BUGFIX] Cache Identifier was not create correctly with sorting
+- [TASK] Fallback for missing date.timezone setting in server configuration for date fields
 
 **1.7.4**
 
