@@ -602,7 +602,7 @@
                                 </items>
                                 <default>RECORD.uid</default>
                                 <multiple>0</multiple>
-                                <itemsProcFunc>MageDeveloper\Dataviewer\UserFunc\Field->populateFields</itemsProcFunc>
+                                <itemsProcFunc>MageDeveloper\Dataviewer\UserFunc\Field->populateFieldsOnStoragePages</itemsProcFunc>
                                 <maxitems>1</maxitems>
                                 <minitems>1</minitems>
                                 <size>1</size>
