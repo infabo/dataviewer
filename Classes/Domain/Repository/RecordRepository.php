@@ -276,8 +276,8 @@ class RecordRepository extends AbstractRepository
 		$query->statement($statement);
 		$result = $query->execute(true);
 
-
 		// Apply Sorting
+		/*
 		if(is_numeric($sortField))
 		{
 			usort($result, function ($a, $b) {
@@ -287,6 +287,7 @@ class RecordRepository extends AbstractRepository
 
 		if(is_numeric($sortField) && $sortOrder == QueryInterface::ORDER_DESCENDING)
 			$result=array_reverse($result, true);
+		*/
 			
 		return $result;
 	}
