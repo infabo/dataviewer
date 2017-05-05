@@ -42,7 +42,7 @@
 										<f:else><core:icon identifier="extensions-dataviewer-{record.datatype.icon}" size="small" /></f:else>
 									</f:if>
 									&nbsp;
-									[{record.uid}]&nbsp;{record.title}
+									[{record.uid}]&nbsp;<span title="{record.title}"><f:format.crop maxCharacters="35" respectWordBoundaries="FALSE">{record.title}</f:format.crop></span>
 									<br />
 									<small class="text-muted">
 										<f:translate key="page" />:&nbsp;<dv:render.template template="EXT:dataviewer/Resources/Private/Partials/CmsLayout/DoktypeIcon.html" arguments="{doktype:page.doktype}" />&nbsp;[{page.pid}]&nbsp;{page.title}
@@ -90,7 +90,7 @@
 		</f:if>
 		<f:if condition="{logoUrl}">
 			<li style="float: right;">
-				<f:image src="{logoUrl}" height="16" title="DataViewer Extension" />
+				<img src="{logoUrl}" height="16" title="DataViewer Extension" />
 			</li>
 		</f:if>
 	</ul>
