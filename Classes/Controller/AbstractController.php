@@ -19,6 +19,13 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
 	/**
+	 * Current Content Uid
+	 * 
+	 * @var int
+	 */
+	protected $uid = 0;
+
+	/**
 	 * Plugin Settings Service
 	 *
 	 * @var \MageDeveloper\Dataviewer\Service\Settings\Plugin\PluginSettingsService
@@ -89,7 +96,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 	 * @inject
 	 */
 	protected $pluginCacheService;
-	
+
 	/**
 	 * Gets the extension name
 	 * 
@@ -356,9 +363,12 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 	protected function initializeView(ViewInterface $view)
 	{
 		$cObj = $this->configurationManager->getContentObject();
-			
+				
 		if ($cObj instanceof \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer)
+		{
 			$this->view->assign("cObj", $cObj->data);
+			$this->uid = $cObj->data["uid"];		
+		}
 
 		$this->view->assign("baseUrl", $GLOBALS["TSFE"]->baseURL);
 
