@@ -453,7 +453,7 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 		$this->saveData[$id] = [
 			$incomingFieldArray,
 		];
-
+		
 		// We need to remove all elements from the array where the key is an integer,
 		// so we can remove our custom fields in order to let the save procedure
 		// in combination with the added GLOBALS (for the suggest wizard) removed
@@ -715,12 +715,10 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 	protected function _processRecordSaveData(RecordModel $record, array $recordSaveData = [])
 	{
 		$datatype = $record->getDatatype();
-
-		if($record->hasTitleField())
-			$record->setTitle("");
-
-		if(isset($recordSaveData["title"]))
-			$record->setTitle($recordSaveData["title"]);
+		
+		// Default reset the record title and store the previous title
+		$previousTitle = $record->getTitle(true);
+		$record->setTitle("");
 
 		if(isset($recordSaveData["hidden"]))
 			$record->setHidden((bool)$recordSaveData["hidden"]);
@@ -832,6 +830,17 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 
 		}
 
+		if($record->getTitle(true) == "")
+		{
+			// No title was set before, so we check, if a new title can be set from
+			// the recordSaveData
+			if(isset($recordSaveData["title"]))
+				$record->setTitle($recordSaveData["title"]);
+			else
+				$record->setTitle($previousTitle);
+
+		}
+
 		if ($overallResult === false)
 		{
 			// We hide the record until it is ok
@@ -843,7 +852,6 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 			// Redirect back to form
 			$this->_redirectRecord($record->getUid());
 		}
-
 	}
 
 	/**
