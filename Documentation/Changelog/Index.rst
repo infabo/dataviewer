@@ -20,6 +20,8 @@ Changelog
 - [BUGFIX] Sorting when cache is enabled
 - [BUGFIX] Cache Identifier was not create correctly with sorting
 - [TASK] Fallback for missing date.timezone setting in server configuration for date fields
+- [BUGFIX] No more errors when no template paths were found during login
+- [TASK] Rewriting uploadFolder values with correct structure
 
 **1.7.4**
 
