@@ -29,10 +29,10 @@ class BackendAccessService
 
 		if($customLogo = $this->_getBackendUser()->getTSConfigVal('options.dataviewer.customLogo'))
 			$logo = $customLogo;
-
+			
 		$logo = GeneralUtility::getFileAbsFileName($logo);
 		$logoUrl = PathUtility::getAbsoluteWebPath($logo);
-
+		
 		return $logoUrl;
 	}
 

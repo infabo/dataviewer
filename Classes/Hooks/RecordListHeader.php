@@ -123,7 +123,7 @@ class RecordListHeader implements RecordListHookInterface
 	public function renderListHeader($table, $currentIdList, $headerColumns, &$parentObject)
 	{
 		if($table != "tx_dataviewer_domain_model_record" || $parentObject->searchString != "") return $headerColumns;
-		
+
 		$pid = $parentObject->id;
 		
 		// We set a pid here, so we can store/get only the information of the selected page
@@ -243,7 +243,6 @@ class RecordListHeader implements RecordListHookInterface
 			$headerColumns["title"] 	= $formTag.$headerColumns["title"];
 			$headerColumns["_CONTROL_"] = $formTag.$headerColumns["_CONTROL_"]."</form>";
 		}
-		
 		
 		return $headerColumns;
 	}
