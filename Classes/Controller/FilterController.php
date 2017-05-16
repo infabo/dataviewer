@@ -88,7 +88,7 @@ class FilterController extends AbstractController
 		{
 			// Prepare Filters
 			$filtersFromPost = $this->request->getArgument("filters");
-			$merge = true; 				// Merge Filters
+			$merge = false; // Merge Filters, this is on our todo list
 			$selected = [];
 			
 			foreach($filtersFromPost as $_fieldId=>$_fArray)

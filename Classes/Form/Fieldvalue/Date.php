@@ -60,15 +60,36 @@ class Date extends AbstractFieldvalue implements FieldvalueInterface
 	/**
 	 * Gets a datetime model by a
 	 * given timestamp
-	 * 
+	 *
 	 * @param int $timestamp
 	 * @return \DateTime
 	 */
 	protected function _getDateTimeByTimestamp($timestamp)
 	{
 		$date = new \DateTime('@' . $timestamp);
-		$date->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+		$date->setTimezone(new \DateTimeZone($this->getDefaultTimezone()));
 		return $date;
+	}
+
+	/**
+	 * Get default timezone
+	 *
+	 * @return string
+	 */
+	protected function getDefaultTimezone()
+	{
+		$timeZone = $GLOBALS['TYPO3_CONF_VARS']['SYS']['phpTimeZone'];
+		if (empty($timeZone))
+		{
+			// Time zone from the server environment (TZ env or OS query)
+			$defaultTimeZone = @date_default_timezone_get();
+			if ($defaultTimeZone !== '')
+				$timeZone = $defaultTimeZone;
+			else
+				$timeZone = 'UTC';
+		}
+
+		return $timeZone;
 	}
 
 	/**

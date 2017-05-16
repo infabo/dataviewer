@@ -190,11 +190,23 @@ class Field
 		$options = [];
 		$fields = $this->fieldRepository->findAllOnPids([$pid], true);
 
+		$sortedFields = [];
+		
 		foreach($fields as $_field)
 		{
-			$pid = $_field->getPid();
-			$label = $this->_getFieldLabel($_field);
-			$options[] = [$label, $_field->getUid()];
+			$type = $_field->getType();
+			$sortedFields[$type][] = $_field;
+		}
+
+		ksort($sortedFields);
+
+		foreach($sortedFields as $_type=>$_fields)
+		{
+			foreach($_fields as $_field)
+			{
+				$label = $this->_getFieldLabel($_field);
+				$options[] = [$label, $_field->getUid()];
+			}
 		}
 
 		$config["items"] = $options;

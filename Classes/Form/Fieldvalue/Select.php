@@ -60,23 +60,33 @@ class Select extends AbstractFieldvalue implements FieldvalueInterface
 
                 if ($repository instanceof \TYPO3\CMS\Extbase\Persistence\Repository)
                 {
+                	/* @var \TYPO3\CMS\Extbase\DomainObject\AbstractEntity $model */
                     $model = $repository->findByUid($id);
-                    if ($model instanceof $modelClass && $model->getHidden() == 0)
+                    
+                    if ($model instanceof $modelClass)
                     {
                         $item = $model;
                     }
                 }
             }
         }
-        else
+
+        // Try to load an array item
+        if(!$item || is_null($item))
         {
             try
             {
-                $item = BackendUtility::getRecord($table, $id, "*", "hidden = 0", true);
+                $item = BackendUtility::getRecord($table, $id, "*", BackendUtility::BEenableFields($table), true);
             }
             catch (\Exception $e) {	}
         }
-
+        
+        
+        
+        
+        
+        
+        
         return $item;
 	}
 
@@ -114,7 +124,7 @@ class Select extends AbstractFieldvalue implements FieldvalueInterface
                 {
                     $searchParams[] = $_id;
 
-                    $record = BackendUtility::getRecord($foreignTable, $_id, "*", "hidden = 0");
+                    $record = BackendUtility::getRecord($foreignTable, $_id, "*", BackendUtility::BEenableFields($foreignTable));
                     if(is_array($record))
                     {
                         $searchFields = $GLOBALS["TCA"][$foreignTable]["ctrl"]["searchFields"];
@@ -177,7 +187,7 @@ class Select extends AbstractFieldvalue implements FieldvalueInterface
 			// We check the tca configuration, if we can find the searchFields field
 			if(isset($GLOBALS["TCA"][$foreignTable]["ctrl"]["searchFields"]))
 			{
-				$record = BackendUtility::getRecord($foreignTable, $value, "*", "hidden = 0");
+				$record = BackendUtility::getRecord($foreignTable, $value, "*", BackendUtility::BEenableFields($foreignTable));
 				if(is_array($record))
 				{
 					$searchFields = $GLOBALS["TCA"][$foreignTable]["ctrl"]["searchFields"];

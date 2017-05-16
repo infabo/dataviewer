@@ -115,8 +115,16 @@ class Group extends AbstractFieldtype implements FieldtypeInterface
 
 		//uploadfolder
 		if($uploadfolder = $this->getField()->getConfig("uploadfolder"))
-			$tca["processedTca"]["columns"][$fieldName]["config"]["uploadfolder"] = $uploadfolder;
+		{
+			// We need to prepare the uploadfolder variable for matching the correct value
+			// The value has to begin without a '/' and has to end with a '/'
+			$uploadfolder = rtrim($uploadfolder, '/');
+			$uploadfolder = trim($uploadfolder, '/');
+			$uploadfolder .= '/';
 
+			$tca["processedTca"]["columns"][$fieldName]["config"]["uploadfolder"] = $uploadfolder;
+		}
+		
 		//hideMoveIcons
 		if($hideMoveIcons = $this->getField()->getConfig("hideMoveIcons"))
 			$tca["processedTca"]["columns"][$fieldName]["config"]["hideMoveIcons"] = (bool)$hideMoveIcons;
