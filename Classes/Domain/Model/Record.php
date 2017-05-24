@@ -2,6 +2,7 @@
 namespace MageDeveloper\Dataviewer\Domain\Model;
 
 use MageDeveloper\Dataviewer\Utility\DebugUtility;
+use MageDeveloper\Dataviewer\Factory\ValueFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Object\UnknownClassException;
@@ -20,7 +21,7 @@ class Record extends AbstractModel
 {
 	/**
 	 * Record - Datatype Relation
-	 * 
+	 *
 	 * @var \MageDeveloper\Dataviewer\Domain\Model\Datatype
 	 */
 	protected $datatype = NULL;
@@ -76,7 +77,6 @@ class Record extends AbstractModel
 	 */
 	protected $sorting;
 
-
 	/**
 	 * Field is hidden
 	 *
@@ -85,19 +85,26 @@ class Record extends AbstractModel
 	protected $hidden = FALSE;
 
 	/**
+	 * _languageUid
+	 * @var int
+	 */
+	protected $_languageUid;
+
+	/**
 	 * Finalized record values
-	 * 
+	 *
 	 * @var \MageDeveloper\Dataviewer\Domain\Repository\ValueRepository
 	 * @inject
 	 */
 	protected $values;
 
 	/**
-	 * Object Manager Instance
-	 * 
-	 * @var ObjectManager
+	 * Value Factory
+	 *
+	 * @var \MageDeveloper\Dataviewer\Factory\ValueFactory
+	 * @inject
 	 */
-	protected $objectManager;
+	protected $valueFactory;
 
 	/**
 	 * __construct
@@ -110,15 +117,15 @@ class Record extends AbstractModel
 
 	/**
 	 * Gets the object manager
-	 * 
-	 * @return \TYPO3\CMS\Extbase\Object\ObjectManager
+	 *
+	 * @return MageDeveloper\Dataviewer\Factory\ValueFactory
 	 */
-	public function getObjectManager()
+	public function getValueFactory()
 	{
-		if(!$this->objectManager)
-			$this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+		if(!$this->valueFactory)
+			$this->valueFactory = GeneralUtility::makeInstance(ValueFactory::class);
 
-		return $this->objectManager;
+		return $this->valueFactory;
 	}
 
 	/**
@@ -136,27 +143,27 @@ class Record extends AbstractModel
 
 	/**
 	 * Gets the values
-	 * 
+	 *
 	 * @return \MageDeveloper\Dataviewer\Domain\Repository\ValueRepository
 	 */
 	public function getValues()
 	{
 		if(!$this->values instanceof \MageDeveloper\Dataviewer\Domain\Repository\ValueRepository)
 			$this->values = new \MageDeveloper\Dataviewer\Domain\Repository\ValueRepository();
-			
+
 		return $this->values;
 	}
 
 	/**
 	 * Gets a value by a given field id
-	 * 
+	 *
 	 * @param int $fieldId
 	 * @return \MageDeveloper\Dataviewer\Domain\Model\Value
 	 */
 	public function getValueByFieldId($fieldId)
 	{
-		$values = $this->getValues();
-		return $values->getValueByFieldId($fieldId);
+		$field = $this->getFieldById($fieldId);
+		return $this->getValueByField($field);
 	}
 
 	/**
@@ -167,13 +174,37 @@ class Record extends AbstractModel
 	 */
 	public function getValueByField(\MageDeveloper\Dataviewer\Domain\Model\Field $field)
 	{
-		$id = $field->getUid();
-		return $this->getValueByFieldId($id);
+		$this->initializeValue($field);
+
+		$values = $this->getValues();
+		$value = $values->getValueByFieldId($field->getUid());
+
+		return $value;
+	}
+
+	/**
+	 * Gets a field by id
+	 *
+	 * @param $fieldId
+	 * @return bool
+	 */
+	public function getFieldById($fieldId)
+	{
+		if ($this->fields)
+		{
+			foreach ($this->fields as $_field)
+			{
+				if($_field->getUid() == $fieldId)
+					return $_field;
+			}
+		}
+
+		return false;
 	}
 
 	/**
 	 * Sets the values with an valueRepository
-	 * 
+	 *
 	 * @param \MageDeveloper\Dataviewer\Domain\Repository\ValueRepository $values
 	 * @return void
 	 */
@@ -184,21 +215,21 @@ class Record extends AbstractModel
 
 	/**
 	 * Returns the datatype
-	 * 
+	 *
 	 * @return \MageDeveloper\Dataviewer\Domain\Model\Datatype $datatype
 	 */
-	public function getDatatype() 
+	public function getDatatype()
 	{
 		return $this->datatype;
 	}
 
 	/**
 	 * Sets the datatype
-	 * 
+	 *
 	 * @param \MageDeveloper\Dataviewer\Domain\Model\Datatype $datatype
 	 * @return void
 	 */
-	public function setDatatype(\MageDeveloper\Dataviewer\Domain\Model\Datatype $datatype) 
+	public function setDatatype(\MageDeveloper\Dataviewer\Domain\Model\Datatype $datatype)
 	{
 		$this->datatype = $datatype;
 	}
@@ -240,7 +271,7 @@ class Record extends AbstractModel
 
 	/**
 	 * Sets the title
-	 * 
+	 *
 	 * @param string $title
 	 * @return void
 	 */
@@ -253,7 +284,7 @@ class Record extends AbstractModel
 	 * Appends Title Information
 	 * Uses the title divider, that is configured
 	 * in the datatype
-	 * 
+	 *
 	 * @param string $append Title to append
 	 * @return void
 	 */
@@ -365,7 +396,7 @@ class Record extends AbstractModel
 
 		if ($this->recordValues)
 		{
-			foreach ($this->recordValues as $_recordValue) 
+			foreach ($this->recordValues as $_recordValue)
 			{
 				/* @var \MageDeveloper\Dataviewer\Domain\Model\RecordValue $_recordValue */
 				if($_recordValue->getField() instanceof \MageDeveloper\Dataviewer\Domain\Model\Field)
@@ -374,13 +405,13 @@ class Record extends AbstractModel
 
 			}
 		}
-		
+
 		return false;
 	}
 
 	/**
 	 * Gets the timestamp
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getTstamp()
@@ -390,7 +421,7 @@ class Record extends AbstractModel
 
 	/**
 	 * Sets the timestamp
-	 * 
+	 *
 	 * @param int $tstamp
 	 * @return void
 	 */
@@ -401,7 +432,7 @@ class Record extends AbstractModel
 
 	/**
 	 * Gets the sorting value
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getSorting()
@@ -411,7 +442,7 @@ class Record extends AbstractModel
 
 	/**
 	 * Sets the sorting value
-	 * 
+	 *
 	 * @param int $sorting
 	 * @return void
 	 */
@@ -419,7 +450,7 @@ class Record extends AbstractModel
 	{
 		$this->sorting = $sorting;
 	}
-	
+
 	/**
 	 * Checks if the fieldvalue is hidden
 	 *
@@ -451,25 +482,42 @@ class Record extends AbstractModel
 	}
 
 	/**
+	 * @param int $_languageUid
+	 * @return void
+	 */
+	public function set_languageUid($_languageUid)
+	{
+		$this->_languageUid = $_languageUid;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function get_languageUid()
+	{
+		return $this->_languageUid;
+	}
+
+	/**
 	 * Determines if the record has an title field
 	 * or needs to use its own title
-	 * 
+	 *
 	 * @return bool
 	 */
 	public function hasTitleField()
 	{
 		if(!$this->getDatatype() instanceof \MageDeveloper\Dataviewer\Domain\Model\Datatype)
 			return false;
-			
+
 		$fields = $this->getDatatype()->getFields();
-		
+
 		foreach($fields as $_field)
 		{
 			/* @var Field $_field */
 			if ($_field->getIsRecordTitle())
 				return true;
 		}
-		
+
 		return false;
 	}
 
@@ -486,7 +534,7 @@ class Record extends AbstractModel
 
 	/**
 	 * Gets debugging information for the current record
-	 * 
+	 *
 	 * @return string
 	 */
 	public function getDebuggingInformation()
@@ -504,26 +552,26 @@ class Record extends AbstractModel
 	public function __call($method, $args)
 	{
 		$key = $this->_underscore(substr($method,3));
-		
+
 		if($key == "__debug")
 			return $this->getDebuggingInformation();
-		
+
 		switch( substr($method, 0, 3) )
 		{
 			case "get":
 				$field = $this->getFieldByCode($key);
 				if($field instanceof \MageDeveloper\Dataviewer\Domain\Model\Field)
 					$this->initializeValue($field);
-					
+
 				return $this->getValues()->getValueByCode($key);
 				break;
 		}
 		return;
 	}
-	
+
 	/**
 	 * Gets a assigned field by a field code
-	 * 
+	 *
 	 * @param string $code
 	 * @return null|\MageDeveloper\Dataviewer\Domain\Model\Field
 	 */
@@ -542,7 +590,7 @@ class Record extends AbstractModel
 				return $_field;
 			}
 		}
-		
+
 		return;
 	}
 
@@ -559,49 +607,13 @@ class Record extends AbstractModel
 		if (!$this->getDatatype())
 			return;
 
-		// We initialize the object manager that is needed for building the value
-		$objectManager = $this->getObjectManager();
+		// We can possibly reactivate this and remove it from the ValueFactory
+		// when we found out, what is the best for speed up the process
+		// $recordValue = $this->getRecordValueByField($field);
+		// TODO: evaluate
 
-		/* @var \MageDeveloper\Dataviewer\Service\Settings\FieldtypeSettingsService $fieldtypeSettingsService */
-		$fieldtypeSettingsService = $objectManager->get(\MageDeveloper\Dataviewer\Service\Settings\FieldtypeSettingsService::class);
-
-		// We create a blank value model here that will be filled up in the later steps
-		$value  	= new \MageDeveloper\Dataviewer\Domain\Model\Value();
-		$config		= $fieldtypeSettingsService->getFieldtypeConfiguration($field->getType());
-		$valueClass	= $config->getValueClass();
-
-		// In case the value class doesn't exist, we fallback to our general value class
-		if(!$objectManager->isRegistered($valueClass)) 
-			$valueClass = \MageDeveloper\Dataviewer\Form\Fieldvalue\General::class;
-
-		/* @var \MageDeveloper\Dataviewer\Form\Fieldvalue\FieldvalueInterface $fieldvalue */
-		$fieldvalue = $objectManager->get($valueClass);
-		$fieldvalue->setField($field);
-		$value->setFieldvalue($fieldvalue);
-
-		$recordValue = $this->getRecordValueByField($field);
-
-		if($recordValue instanceof \MageDeveloper\Dataviewer\Domain\Model\RecordValue)
-		{
-			if($fieldvalue instanceof \MageDeveloper\Dataviewer\Form\Fieldvalue\FieldvalueInterface)
-			{
-				// We need to initialize the fieldvalue with the plain value
-				$fieldvalue->setValue($recordValue->getValueContent());
-			}
-
-		}
-		else
-		{
-			// Temporary RecordValue
-			/* @var \MageDeveloper\Dataviewer\Domain\Model\RecordValue $recordValue */
-			$recordValue = $objectManager->get(\MageDeveloper\Dataviewer\Domain\Model\RecordValue::class);
-			$recordValue->setRecord($this);
-		}
-
-		$value->setRecordValue($recordValue);
-		$value->setField($field);
+		$value = $this->valueFactory->create($field, $this);
 		$this->getValues()->addValue($value);
-
 		return;
 	}
 
@@ -614,11 +626,11 @@ class Record extends AbstractModel
 	{
 		if (!$this->getDatatype())
 			return;
-			
+
 		$fields = $this->getDatatype()->getFields();
 		foreach($fields as $_field)
 			$this->initializeValue($_field);
-		
+
 		return;
 	}
 }

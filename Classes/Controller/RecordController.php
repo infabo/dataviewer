@@ -111,6 +111,7 @@ class RecordController extends AbstractController
 	public function listAction()
 	{
 		$cacheIdentifier = $this->getCacheIdentifier();
+		$cache = $this->cacheManager->getCache("cache_hash");
 
 		$lifetime = $this->listSettingsService->getCacheLifetime();
 		$this->pluginCacheService->setLifetime($lifetime);
@@ -118,14 +119,14 @@ class RecordController extends AbstractController
 
 		$cachedIds = null;
 		if($lifetime > 0)
-			$cachedIds = \TYPO3\CMS\Frontend\Page\PageRepository::getHash($cacheIdentifier);
+			$cachedIds = $cache->get($cacheIdentifier);
 
 		if(is_array($cachedIds))
 		{
 			$cached = true;
 			// We get the valid record ids from the cache
 			$ids = $cachedIds;
-			$selectedRecords = $this->recordRepository->findByRecordIds($ids, $this->storagePids);
+			$selectedRecords = $this->recordRepository->findByUids($ids);
 		}
 		else
 		{
@@ -137,7 +138,7 @@ class RecordController extends AbstractController
 			foreach($selectedRecords as $_s)
 				$ids[] = $_s->getUid();
 
-			\TYPO3\CMS\Frontend\Page\PageRepository::storeHash($cacheIdentifier, $ids, "records", $lifetime);
+			$cache->set($cacheIdentifier, $ids, ["records"], $lifetime);
 		}
 
 		// We set these records as currently active and valid
@@ -148,8 +149,7 @@ class RecordController extends AbstractController
 		$templateSwitch = $this->getTemplateSwitch();
 		if($templateSwitch)
 			$this->view->setTemplatePathAndFilename($templateSwitch);
-			
-			
+
 		$this->view->assign($this->listSettingsService->getRecordsVarName(), $selectedRecords);
 		$this->view->assign("cached", $cached);
 		$this->view->assign("cacheIdentifier", $cacheIdentifier);
@@ -751,33 +751,13 @@ class RecordController extends AbstractController
 		gte			>=			{(int)$var}					->greaterThanOrEqual
 		lte			<=			{(int)$var}					->lessThanOrEqual
 		 ****************************************************************************************************/
-		if(true ||$this->settings["debug"] == 1)
+		if($this->settings["debug"] == 1)
 		{
 			$statement = $this->recordRepository->getStatementByAdvancedConditions($filters, $sortField, $sortOrder, $limit, $this->storagePids);
 			$this->view->assign("statement", $statement);
 		}
 
 		$validRecords = $this->recordRepository->findByAdvancedConditions($filters, $sortField, $sortOrder, $limit, $this->storagePids);
-		$records = null;
-		$validRecordIds = array_column($validRecords, "uid");
-
-		if(!empty($validRecordIds))
-			$records = $this->recordRepository->findByRecordIds($validRecordIds, $this->storagePids);
-
-		/* @var \MageDeveloper\Dataviewer\Domain\Model\Record $_record */
-		$selectedRecordIds = [];
-		if($records)
-		{
-			foreach ($records as $_record)
-			{
-				//$_record->initializeValues();
-				$selectedRecordIds[] = $_record->getUid();
-			}
-		}
-		else
-		{
-			$records = [];
-		}
 
 		//////////////////////////////////////////////////////
 		// Signal-Slot for post-processing selected records //
@@ -786,12 +766,12 @@ class RecordController extends AbstractController
 			__CLASS__,
 			"postProcessSelectedRecords",
 			[
-				&$records,
+				&$validRecords,
 				&$this,
 			]
 		);
 
-		return $records;
+		return $validRecords;
 	}
 
 	/**
@@ -993,7 +973,7 @@ class RecordController extends AbstractController
 			return false;
 
 		$uid = (int)$this->uid;
-		
+
 		if($uid <= 0)
 		{
 			return false;
@@ -1004,8 +984,8 @@ class RecordController extends AbstractController
 			"tt_content",		// FROM
 			"list_type = 'dataviewer_sort' AND hidden = 0 AND deleted = 0 AND pi_flexform RLIKE '<field index=\"settings.target_plugin\">.*<value index=\"vDEF\">{$uid}</value>.*</field>'"	// WHERE
 		);
-		
-		return (count($res)>0);
+
+		return (count($rows)>0);
 	}
 
 	/**
@@ -1015,7 +995,8 @@ class RecordController extends AbstractController
 	 * Adds some variables to view that could always
 	 * be useful
 	 *
-	 * @param ViewInterface $view	 * @return void
+	 * @param ViewInterface $view
+	 * @return void
 	 */
 	protected function initializeView(ViewInterface $view)
 	{
@@ -1031,17 +1012,13 @@ class RecordController extends AbstractController
 		$pageData = $cObj->data;
 		$this->storagePids = GeneralUtility::trimExplode(",", $pageData["pages"], true);
 
-		$ids = $this->listSettingsService->getSelectedVariableIds();
-		$variables = $this->prepareVariables($ids);
-		$this->view->assignMultiple($variables);
-
 		// Rendering custom fluid code, given in the records plugin
 		// For this, we just replace the default view model
 		// with our custom view and put some stuff in it
 		if($this->listSettingsService->isCustomFluidCode())
 		{
 			// Assigning the custom view model as general
-			$this->view = $this->getStandaloneView(true);
+			$this->view = $this->getStandaloneView(false);
 
 			$templateSource = $this->listSettingsService->getFluidCode();
 
@@ -1056,7 +1033,12 @@ class RecordController extends AbstractController
 				$this->view->setTemplateSource($templateSource);
 
 		}
-		
+
+		// Adding variables to the view
+		$ids = $this->listSettingsService->getSelectedVariableIds();
+		$variables = $this->prepareVariables($ids);
+		$this->view->assignMultiple($variables);
+
 		// Inject current settings to the settings service
 		$this->listSettingsService->setSettings($this->settings);
 
@@ -1098,7 +1080,13 @@ class RecordController extends AbstractController
 
 		if($includeVariables === true)
 		{
-			$variables = $this->variableRepository->findByStoragePids($this->storagePids);
+			$pids = $this->storagePids;
+
+			// Merging with template variables from the current page
+			if(is_int($GLOBALS["TSFE"]->id))
+				$pids[] = $GLOBALS["TSFE"]->id;
+
+			$variables = $this->variableRepository->findByStoragePids($pids);
 			$ids = [];
 
 			foreach($variables as $_v)
