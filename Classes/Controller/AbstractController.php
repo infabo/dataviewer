@@ -20,11 +20,11 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 {
 	/**
 	 * Current Content Uid
-	 * 
+	 *
 	 * @var int
 	 */
 	protected $uid = 0;
-
+	
 	/**
 	 * Plugin Settings Service
 	 *
@@ -97,6 +97,14 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 	 */
 	protected $pluginCacheService;
 
+	/**
+	 * Cache Manager
+	 * 
+	 * @var \TYPO3\CMS\Core\Cache\CacheManager
+	 * @inject
+	 */
+	protected $cacheManager;
+	
 	/**
 	 * Gets the extension name
 	 * 
@@ -194,7 +202,7 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 			if($variable instanceof Variable)
 			{
 				$name = $variable->getVariableName();
-				
+			
 				if(in_array($name, $deniedVariableNames))
 					throw new InvalidArgumentNameException("Variable must not be named '".implode("' or '", $deniedVariableNames)."'!");
 
@@ -221,12 +229,12 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                             if(is_array($value))
                             {
                                 $value = array_map(function($v) {
-                                    return GeneralUtility::removeXSS($v);
+                                    return \MageDeveloper\Dataviewer\Utility\GetPostUtility::secureVariableGet($v);
                                 }, $value);
                             }
                             else
                             {
-                                $value = GeneralUtility::removeXSS($value);
+                                $value = \MageDeveloper\Dataviewer\Utility\GetPostUtility::secureVariableGet($value);
                             }
 
 							$variables[$name] = $value;
@@ -241,12 +249,12 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
                             if(is_array($value))
                             {
                                 $value = array_map(function($v) {
-                                    return GeneralUtility::removeXSS($v);
+                                    return \MageDeveloper\Dataviewer\Utility\GetPostUtility::secureVariablePost($v);
                                 }, $value);
                             }
                             else
                             {
-                                $value = GeneralUtility::removeXSS($value);
+                                $value = \MageDeveloper\Dataviewer\Utility\GetPostUtility::secureVariablePost($value);
                             }
                             
 							$variables[$name] = $value;
@@ -335,8 +343,8 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 						$variables[$name] = $variable->getVariableValue();
 						break;
 				}
-			}
-		}
+			} // EO IF
+		} // EO FOREACH
 
 		///////////////////////////////////////////////////////////////////////////
 		// Signal-Slot for manipulating the variables that are added to the view //
@@ -363,15 +371,14 @@ abstract class AbstractController extends \TYPO3\CMS\Extbase\Mvc\Controller\Acti
 	protected function initializeView(ViewInterface $view)
 	{
 		$cObj = $this->configurationManager->getContentObject();
-				
+			
 		if ($cObj instanceof \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer)
 		{
 			$this->view->assign("cObj", $cObj->data);
-			$this->uid = $cObj->data["uid"];		
+			$this->uid = $cObj->data["uid"];
 		}
 
 		$this->view->assign("baseUrl", $GLOBALS["TSFE"]->baseURL);
-
 		parent::initializeView($view); 
 	}
 
