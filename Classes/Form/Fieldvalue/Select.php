@@ -71,21 +71,22 @@ class Select extends AbstractFieldvalue implements FieldvalueInterface
             }
         }
 
-        // Try to load an array item
-        if(!$item || is_null($item))
-        {
-            try
-            {
-                $item = BackendUtility::getRecord($table, $id, "*", BackendUtility::BEenableFields($table), true);
-            }
-            catch (\Exception $e) {	}
-        }
-        
-        
-        
-        
-        
-        
+		// Try to load an array item
+		if(!$item || is_null($item))
+		{
+			if($table)
+			{
+				try
+				{
+					$item = BackendUtility::getRecord($table, $id, "*", BackendUtility::BEenableFields($table), true);
+				}
+				catch (\Exception $e) {	}
+			}
+			else
+			{
+				$item = $id;
+			}
+		}
         
         return $item;
 	}
