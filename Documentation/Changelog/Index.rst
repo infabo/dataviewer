@@ -10,6 +10,12 @@
 Changelog
 ---------
 
+**1.7.6**
+
+[TASK] Using DataMapper directly in the findByAdvancedConditions Method
+[TASK] Created ValueFactory for faster generation of the value elements
+[BUGFIX] Added correct indexes on tx_dataviewer_domain_model_recordvalue
+
 **1.7.5**
 
 - [BUGFIX] Special Inline Elements will now be loaded
