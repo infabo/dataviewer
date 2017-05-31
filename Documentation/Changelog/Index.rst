@@ -12,9 +12,14 @@ Changelog
 
 **1.7.6**
 
-[TASK] Using DataMapper directly in the findByAdvancedConditions Method
-[TASK] Created ValueFactory for faster generation of the value elements
-[BUGFIX] Added correct indexes on tx_dataviewer_domain_model_recordvalue
+- [TASK] Using DataMapper directly in the findByAdvancedConditions Method
+- [TASK] Created ValueFactory for faster generation of the value elements
+- [BUGFIX] Added correct indexes on tx_dataviewer_domain_model_recordvalue
+- [TASK] Created ValueFactory for faster generation of the value elements
+- [BUGFIX] Added correct indexes on tx_dataviewer_domain_model_recordvalue
+- [BUGFIX] Initialization of language in FormController (#15)
+- [BUGFIX] Form Plugin Redirects had a wrong record parameter
+- [TASK] Sorting of Datatype Icons in the Docheader is now made by sorting of Datatypes
 
 **1.7.5**
 
