@@ -229,7 +229,7 @@ class FormController extends AbstractController
 		$this->persistenceManager->persistAll();
 
 		$actionName = "index";
-		$controllerName = null;
+		$controllerName = "Record";
 		$extensionName = null;
 		$arguments = ["record" => $record];
 		/////////////////////////////////////
