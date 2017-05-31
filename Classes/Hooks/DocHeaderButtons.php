@@ -94,7 +94,7 @@ class DocHeaderButtons
 		/* @var \MageDeveloper\Dataviewer\Fluid\View\StandaloneView $view */
 		$view 		= $this->objectManager->get(\MageDeveloper\Dataviewer\Fluid\View\StandaloneView::class);
 
-		$datatypes = $this->datatypeRepository->findAllOnPid($currentPageId);
+		$datatypes = $this->datatypeRepository->findAllOnPid($currentPageId, ["sorting" => QueryInterface::ORDER_ASCENDING]);
 		if($datatypes)
 		{
 			foreach($datatypes as $_datatype)
