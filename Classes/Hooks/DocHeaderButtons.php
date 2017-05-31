@@ -4,6 +4,7 @@ namespace MageDeveloper\Dataviewer\Hooks;
 use MageDeveloper\Dataviewer\Utility\LocalizationUtility;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**
  * MageDeveloper Dataviewer Extension
