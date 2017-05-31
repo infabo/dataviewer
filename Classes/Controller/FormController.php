@@ -138,6 +138,9 @@ class FormController extends AbstractController
 	 */
 	public function postAction(\MageDeveloper\Dataviewer\Domain\Model\Record $record = null)
 	{
+		// Initialize language
+		\TYPO3\CMS\Frontend\Utility\EidUtility::initLanguage();
+	
 		$redirectPid = null;
 		if(!$record instanceof Record)
 		{
