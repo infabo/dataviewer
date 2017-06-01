@@ -985,7 +985,7 @@ class RecordController extends AbstractController
 			"list_type = 'dataviewer_sort' AND hidden = 0 AND deleted = 0 AND pi_flexform RLIKE '<field index=\"settings.target_plugin\">.*<value index=\"vDEF\">{$uid}</value>.*</field>'"	// WHERE
 		);
 
-		return (count($rows)>0);
+		return (count($res)>0);
 	}
 
 	/**
