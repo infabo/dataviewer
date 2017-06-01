@@ -216,87 +216,87 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['toolbarItems'][] = 'MageDeveloper\\Dataviewer
 /***********************************
  * Backend Stuff
  ***********************************/
-if (TYPO3_MODE === "BE")
-{
-	$GLOBALS["TCA"]["pages"]["columns"]["module"]["config"]["items"][] = [
-		0 => "LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf:tx_dataviewer",
-		1 => "--div--",
-	];
 
-	$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
-	if ($objectManager->isRegistered(\MageDeveloper\Dataviewer\Domain\Repository\DatatypeRepository::class) &&
-		\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded("dataviewer")
-	)
+$boot = function () {
+	if (TYPO3_MODE === "BE")
 	{
-		///////////////////////////////////////////////////////////
-		// We generate page icons for each datatype, that exists //
-		///////////////////////////////////////////////////////////
+		$GLOBALS["TCA"]["pages"]["columns"]["module"]["config"]["items"][] = [
+			0 => "LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf:tx_dataviewer",
+			1 => "--div--",
+		];
 
-		try {
-			// We need to ignore exceptions here in case the
-			// table does not exist
-			/* @var \MageDeveloper\Dataviewer\Domain\Repository\DatatypeRepository $datatypeRepository */
-			$datatypeRepository = $objectManager->get(\MageDeveloper\Dataviewer\Domain\Repository\DatatypeRepository::class);
-			$datatypes = $datatypeRepository->findAll(false);
+		if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded("dataviewer"))
+		{
+			///////////////////////////////////////////////////////////
+			// We generate page icons for each datatype, that exists //
+			///////////////////////////////////////////////////////////
 
-			$GLOBALS["TCA"]["pages"]["columns"]["module"]["config"]["items"][] = [
-				0 => "DataViewer Icons",
-				1 => "--div--",
-			];
+			try {
+				// We need to ignore exceptions here in case the
+				// table does not exist
+				$datatypes = $GLOBALS['TYPO3_DB']->exec_SELECTquery("name,icon","tx_dataviewer_domain_model_datatype", "");
+				
+				$GLOBALS["TCA"]["pages"]["columns"]["module"]["config"]["items"][] = [
+					0 => "DataViewer Icons",
+					1 => "--div--",
+				];
 
-			foreach($datatypes as $_datatype)
-			{
-				/* @var \MageDeveloper\Dataviewer\Domain\Model\Datatype $_datatype */
-				$iconId = "extensions-dataviewer-".$_datatype->getIcon();
-
-				if(!isset($GLOBALS["TCA"]["pages"]["ctrl"]["typeicon_classes"]["contains-dataviewer-{$iconId}"]))
+				foreach($datatypes as $_datatype)
 				{
-					$GLOBALS["TCA"]["pages"]["columns"]["module"]["config"]["items"][] = [
-						0 => $_datatype->getName(),
-						1 => "dataviewer-{$iconId}",
-						2 => $iconId
-					];
-					$GLOBALS["TCA"]["pages"]["ctrl"]["typeicon_classes"]["contains-dataviewer-{$iconId}"] = $iconId;
+					$iconId = "extensions-dataviewer-".$_datatype["icon"];
+
+					if(!isset($GLOBALS["TCA"]["pages"]["ctrl"]["typeicon_classes"]["contains-dataviewer-{$iconId}"]))
+					{
+						$GLOBALS["TCA"]["pages"]["columns"]["module"]["config"]["items"][] = [
+							0 => $_datatype["name"],
+							1 => "dataviewer-{$iconId}",
+							2 => $iconId
+						];
+						$GLOBALS["TCA"]["pages"]["ctrl"]["typeicon_classes"]["contains-dataviewer-{$iconId}"] = $iconId;
+					}
 				}
 
+				$GLOBALS["TCA"]["pages"]["columns"]["module"]["config"]["items"][] = [
+					0 => "LLL:EXT:lang/locallang_view_help.xlf:TOC_extensions",
+					1 => "--div--",
+				];
+
+			} catch(\Exception $e)
+			{
+				// No exception printing here        
 			}
 
-			$GLOBALS["TCA"]["pages"]["columns"]["module"]["config"]["items"][] = [
-				0 => "LLL:EXT:lang/locallang_view_help.xlf:TOC_extensions",
-				1 => "--div--",
-			];
-
-		} catch(\Exception $e)
-		{
-			// No exception printing here        
 		}
 
+		/**
+		 * Backend Module Registration
+		 */
+		\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
+			"MageDeveloper."."dataviewer",
+			"web",          			// Main area
+			"dataviewer",         		// Name of the module
+			"",             			// Position of the module
+			[   	        			// Allowed controller action combinations
+				"BackendModule" => "index, records, datatypes, datatypesDetails, recordsDetails, createRecord",
+				"BackendCsvAssistant" => "index, page, datatype, file, assign, import, review",
+			],
+			[	// Additional configuration
+				"access"    => "user,group",
+				"icon"      => "EXT:dataviewer/Resources/Public/Images/module_icon.png",
+				"labels" 	=> "LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf",
+			]
+		);
+
+		$GLOBALS["TYPO3_CONF_VARS"]["EXTCONF"]["cms"]["db_layout"]["addTables"]["tx_dataviewer_domain_model_record"][] = [
+			"MENU" => "",
+			"fList" => "title, datatype",
+			"icon" => true,
+		];
 	}
+};
 
-	/**
-	 * Backend Module Registration
-	 */
-	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-		"MageDeveloper.".$_EXTKEY,
-		"web",          			// Main area
-		"dataviewer",         		// Name of the module
-		"",             			// Position of the module
-		[   	        			// Allowed controller action combinations
-			"BackendModule" => "index, records, datatypes, datatypesDetails, recordsDetails, createRecord",
-			"BackendCsvAssistant" => "index, page, datatype, file, assign, import, review",
-		],
-		[	// Additional configuration
-			"access"    => "user,group",
-			"icon"      => "EXT:dataviewer/Resources/Public/Images/module_icon.png",
-			"labels" 	=> "LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf",
-		]
-	);
+$boot();
+unset($boot);
+	
 
-	$GLOBALS["TYPO3_CONF_VARS"]["EXTCONF"]["cms"]["db_layout"]["addTables"]["tx_dataviewer_domain_model_record"][] = [
-		"MENU" => "",
-		"fList" => "title, datatype",
-		"icon" => true,
-	];
-
-}
 
