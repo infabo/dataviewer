@@ -789,6 +789,20 @@
                             </config>
                         </TCEforms>
                     </settings.variable_injection>
+
+                    <settings.inline_variable_injection>
+                        <TCEforms>
+                            <label>LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf:flexform.inline_variable_injection</label>
+                            <config>
+                                <type>inline</type>
+                                <autosizemax>10</autosizemax>
+                                <items type="array"></items>
+                                <foreign_table>tx_dataviewer_domain_model_variable</foreign_table>
+                                <maxitems>99999</maxitems>
+                                <minitems>0</minitems>
+                            </config>
+                        </TCEforms>
+                    </settings.inline_variable_injection>
                 </el>
             </ROOT>
         </template_settings>

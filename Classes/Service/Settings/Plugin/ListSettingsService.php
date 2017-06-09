@@ -284,16 +284,19 @@ class ListSettingsService extends PluginSettingsService
 		];
 	}
 
-	/**
-	 * Gets selected variable ids
-	 *
-	 * @return array
-	 */
-	public function getSelectedVariableIds()
-	{
-		$variables = $this->getSettingByCode("variable_injection");
-		return GeneralUtility::trimExplode(",", $variables, true);
-	}
+    /**
+     * Gets selected variable ids
+     *
+     * @return array
+     */
+    public function getSelectedVariableIds()
+    {
+        $variableInjectionConfig = $this->getSettingByCode("variable_injection");
+        $variablesFromInjection = GeneralUtility::trimExplode(",", $variableInjectionConfig, true);
+        $variableInlineConfig = $this->getSettingByCode("inline_variable_injection");
+        $variablesFromInline = GeneralUtility::trimExplode(",", $variableInlineConfig, true);
+        return array_merge($variablesFromInjection, $variablesFromInline);
+    }
 
 	/**
 	 * Debug Mode Enabled

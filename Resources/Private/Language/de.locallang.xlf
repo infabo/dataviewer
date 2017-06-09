@@ -162,6 +162,10 @@
                 <source>Variable Injection</source>
                 <target>Variablen hinzufügen</target>
             </trans-unit>
+            <trans-unit id="flexform.inline_variable_injection">
+                <source>Direct inject Variables</source>
+                <target>Variablen direkt hinzufügen</target>
+            </trans-unit>
             <trans-unit id="flexform.generate_output">
                 <source>Generated Output as Record Value to the Database</source>
                 <target>Generierte Ausgabe der Datenbank als Eintrag hinzufügen</target>
