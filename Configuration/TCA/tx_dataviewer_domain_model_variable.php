@@ -32,7 +32,7 @@ return [
 		'showRecordFieldList' => 'logo, sys_language_uid, l10n_parent, l10n_diffsource, hidden, type, variable_name, session_key, server, page, variable_value, record, field, table_content, column_name, where_clause, user_func',
 	],
 	'types' => [
-		'1' => ['showitem' => 'logo, sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, type, variable_name, session_key, server, page, variable_value, record, field, table_content, column_name, where_clause, user_func, --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.access, starttime, endtime'],
+		'1' => ['showitem' => 'logo, sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, type, variable_name, session_key, server, page, variable_value, record, field, table_content, column_name, where_clause, user_func, type_cast, --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.access, starttime, endtime'],
 	],
 	'palettes' => [
 		'1' => ['showitem' => ''],
@@ -317,6 +317,29 @@ return [
 				'rows' => 2,
 				'eval' => 'trim',
 				'placeholder' => 'x=\'y\' AND z=\'123\' ORDER BY z ASC',
+			],
+		],
+		'type_cast' => [
+			'exclude' => 1,
+			'label' => 'LLL:EXT:dataviewer/Resources/Private/Language/locallang_db.xlf:tx_dataviewer_domain_model_variable.type_cast',
+			'displayCond' => 'FIELD:type:IN:3,4',
+			'config' => [
+				'type' => 'select',
+				'renderType' => 'selectSingle',
+				'items' => [
+					['LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf:variable_type_cast.0', 0], // No type definition
+					['LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf:variable_type_cast.1', 1], // Boolean
+					['LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf:variable_type_cast.2', 2], // Integer
+					['LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf:variable_type_cast.3', 3], // Float
+					['LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf:variable_type_cast.4', 4], // String
+					['LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf:variable_type_cast.5', 5], // Array
+					['LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf:variable_type_cast.6', 6], // Object
+					['LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf:variable_type_cast.7', 7], // NULL
+				],
+				"default" => "0",
+				'size' => 1,
+				'maxitems' => 1,
+				'eval' => 'required'
 			],
 		],
 	],
