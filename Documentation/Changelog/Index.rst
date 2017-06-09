@@ -21,6 +21,8 @@ Changelog
 - [BUGFIX] Form Plugin Redirects had a wrong record parameter
 - [TASK] Sorting of Datatype Icons in the Docheader is now made by sorting of Datatypes
 - [BUGFIX] Loading sequence of fields restricted rendering of fluid fields
+- [FEATURE] Variables also can now be created directly in the Record Plugin
+- [FEATURE] Casting/Evaluating Variable Type for GET/POST Variables
 
 **1.7.5**
 
