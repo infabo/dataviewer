@@ -646,9 +646,14 @@ class RecordController extends AbstractController
 				$additionalCacheParameters["uid"]=$contentObj->data["uid"];
 				$additionalCacheParameters["pid"]=$contentObj->data["pid"];
 			}
+			
+			$variableIds = implode("-", $this->listSettingsService->getSelectedVariableIds());
+			$get = md5(serialize(GeneralUtility::_GET()));
 
 			$key = json_encode($filters) .
 				json_encode($additionalCacheParameters) .
+				$variableIds .
+				$get .
 				$limit .
 				$perPage .
 				$selectedPage .
@@ -1000,6 +1005,9 @@ class RecordController extends AbstractController
 	 */
 	protected function initializeView(ViewInterface $view)
 	{
+		// Inject current settings to the settings service
+		$this->listSettingsService->setSettings($this->settings);
+
 		// Individual session key
 		$uid = $this->_getContentUid();
 		$this->sessionServiceContainer->setTargetUid($uid);
@@ -1021,7 +1029,7 @@ class RecordController extends AbstractController
 			$this->view = $this->getStandaloneView(false);
 
 			$templateSource = $this->listSettingsService->getFluidCode();
-
+			
 			// Checking Debug
 			if($this->listSettingsService->isDebug())
 				$templateSource = "<f:debug>{_all}</f:debug>".$templateSource;
@@ -1038,9 +1046,6 @@ class RecordController extends AbstractController
 		$ids = $this->listSettingsService->getSelectedVariableIds();
 		$variables = $this->prepareVariables($ids);
 		$this->view->assignMultiple($variables);
-
-		// Inject current settings to the settings service
-		$this->listSettingsService->setSettings($this->settings);
 
 		// Parent
 		parent::initializeView($view);
