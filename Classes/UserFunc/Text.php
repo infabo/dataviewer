@@ -141,6 +141,9 @@ class Text
 			$pids[] = $match["uid"];
 		}
 
+		// Adding the pid of the current content element for possible inline variables
+		$pids[] = $row["pid"];
+
         $variables = $this->variableRepository->findByStoragePids($pids);
 
 		$markers = [];
