@@ -140,7 +140,7 @@ class FormController extends AbstractController
 	{
 		// Initialize language
 		\TYPO3\CMS\Frontend\Utility\EidUtility::initLanguage();
-	
+
 		$redirectPid = null;
 		if(!$record instanceof Record)
 		{
@@ -229,7 +229,7 @@ class FormController extends AbstractController
 		$this->persistenceManager->persistAll();
 
 		$actionName = "index";
-		$controllerName = "Record";
+		$controllerName = (is_null($redirectPid))?null:"Record";
 		$extensionName = null;
 		$arguments = ["record" => $record];
 		/////////////////////////////////////
@@ -291,7 +291,7 @@ class FormController extends AbstractController
 		$this->addFlashMessage($message, null, AbstractMessage::ERROR);
 
 		$actionName = "index";
-		$controllerName = null;
+		$controllerName = (is_null($redirectPid))?null:"Record";
 		$extensionName = null;
 		$arguments = ["record" => $record];
 		
