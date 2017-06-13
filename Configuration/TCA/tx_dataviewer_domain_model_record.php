@@ -206,5 +206,10 @@ return [
 				'multiple' => 1,
 			],
 		],
+		'parent' => [
+			'config' => [
+				'type' => 'passthrough',
+			],
+		],
 	],
 ];

@@ -23,6 +23,7 @@ Changelog
 - [BUGFIX] Loading sequence of fields restricted rendering of fluid fields
 - [FEATURE] Variables also can now be created directly in the Record Plugin
 - [FEATURE] Casting/Evaluating Variable Type for GET/POST Variables
+- [FEATURE] Parent Record is now attached on inline records and is available through {record.parent}
 
 **1.7.5**
 
