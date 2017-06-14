@@ -200,9 +200,10 @@ class RecordFactory
 			"table_local" 	=> "sys_file",
 			"uid_local" 	=> $file->getUid(),
 			"tablenames" 	=> "tx_dataviewer_domain_model_record",
-			"uid_foreign" 	=> $record->getUid,
+			"uid_foreign" 	=> $record->getUid(),
 			"fieldname" 	=> $field->getUid(),
-			"pid" 			=> $record->getPid(),
+			"cruser_id"		=> 0,
+			"pid" 			=> 0,
 		);
 
 		$data["tx_dataviewer_domain_model_record"][$record->getUid()] = [
@@ -210,6 +211,8 @@ class RecordFactory
 		];
 
 		$dataHandler->start($data, []);
+		$dataHandler->admin = true;
+		$dataHandler->userid = 0;
 		$dataHandler->process_datamap();
 
 		$id = $dataHandler->substNEWwithIDs[$newId];
@@ -229,6 +232,8 @@ class RecordFactory
 	 * Traverses a given fieldarray and combines the values with
 	 * the correct field ids
 	 *
+	 * @param array $fieldArray
+	 * @param Datatype $datatype
 	 * @return array
 	 */
 	public function traverseFieldArray(array $fieldArray = array(), Datatype $datatype)
