@@ -138,9 +138,18 @@ class FormController extends AbstractController
 	 */
 	public function postAction(\MageDeveloper\Dataviewer\Domain\Model\Record $record = null)
 	{
-		// Initialize language
+		// Initialization
 		\TYPO3\CMS\Frontend\Utility\EidUtility::initLanguage();
-
+		\TYPO3\CMS\Frontend\Utility\EidUtility::initTCA();
+		$GLOBALS['LANG']->csConvObj = $this->objectManager->get(CharsetConverter::class);
+		if(!$GLOBALS["BE_USER"])
+		{
+			/** @var $backendUser \TYPO3\CMS\Core\Authentication\BackendUserAuthentication */
+			$backendUser = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Authentication\BackendUserAuthentication::class);
+			$GLOBALS['BE_USER'] = $backendUser;
+			$backendUser->start();
+		}
+		
 		$redirectPid = null;
 		if(!$record instanceof Record)
 		{
@@ -207,6 +216,10 @@ class FormController extends AbstractController
 			$this->recordRepository->add($record);
 
 		$this->persistenceManager->persistAll();
+
+		// We remove the initialized backend user here
+		if(TYPO3_MODE === "FE" && !$GLOBALS["BE_USER"]->user)
+			unset($GLOBALS['BE_USER']);
 
 		$result = $this->recordDataHandler->processRecord($fieldArray, $record);
 		
