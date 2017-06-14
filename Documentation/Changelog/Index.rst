@@ -24,6 +24,7 @@ Changelog
 - [FEATURE] Variables also can now be created directly in the Record Plugin
 - [FEATURE] Casting/Evaluating Variable Type for GET/POST Variables
 - [FEATURE] Parent Record is now attached on inline records and is available through {record.parent}
+- [BUGFIX] Backend User is now temporarily initialized in the FormController
 
 **1.7.5**
 
