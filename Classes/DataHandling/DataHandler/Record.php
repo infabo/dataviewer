@@ -458,13 +458,6 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 			return;
 		}
 
-		// We need to process the inline record data
-		foreach($parentObj->datamap["tx_dataviewer_domain_model_record"] as $_id=>$_dm)
-		{
-			if($_id != $id)
-				$parentObj->datamap["tx_dataviewer_domain_model_record"][$_id]["parent"] = $id;
-		}
-
 		// Records save data is stored for later usage to
 		// correctly store NEW<hash>-Records
 		$this->saveData[$id] = [
