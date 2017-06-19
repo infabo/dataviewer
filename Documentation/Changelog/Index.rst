@@ -25,6 +25,8 @@ Changelog
 - [FEATURE] Casting/Evaluating Variable Type for GET/POST Variables
 - [FEATURE] Parent Record is now attached on inline records and is available through {record.parent}
 - [BUGFIX] Backend User is now temporarily initialized in the FormController
+- [FEATURE] Added UserFunc for manipulating TypoScript 
+- [TASK] Suggest Wizard for Page Fieldtype
 
 **1.7.5**
 
