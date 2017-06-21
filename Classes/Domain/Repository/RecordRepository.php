@@ -2,8 +2,11 @@
 namespace MageDeveloper\Dataviewer\Domain\Repository;
 
 use MageDeveloper\Dataviewer\Domain\Model\Datatype;
+use MageDeveloper\Dataviewer\Domain\Model\Record;
 use MageDeveloper\Dataviewer\Service\Settings\Plugin\ListSettingsService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
+use TYPO3\CMS\Extbase\Persistence\Generic\Mapper\DataMapper;
 
 /**
  * MageDeveloper Dataviewer Extension
@@ -23,9 +26,7 @@ class RecordRepository extends AbstractRepository
 	 * @var array
 	 */
 	protected $defaultSelectFields = [
-		"RECORD.uid",
-		"RECORD.pid",
-		"RECORD.title",
+		"RECORD.*",
 	];
 
 	/**
@@ -36,30 +37,6 @@ class RecordRepository extends AbstractRepository
 	protected $defaultOrderings = [
 		'sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING
 	];
-
-	/**
-	 * Find records by given uids
-	 *
-	 * @param array $uids
-	 * @param array $storagePids
-	 * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
-	 */
-	public function findByUids(array $uids, array $storagePids = [])
-	{
-		$query 			= $this->createQuery();
-		$querySettings 	= $query->getQuerySettings();
-		$querySettings->setRespectSysLanguage(true);
-
-		if(!empty($storagePids))
-		{
-			$querySettings->setStoragePageIds($storagePids);
-			$querySettings->setRespectStoragePage(true);
-		}
-
-		return $query->matching(
-			$query->in("uid", $uids)
-		)->execute();
-	}
 
 	/**
 	 * Find latest records
@@ -135,28 +112,31 @@ class RecordRepository extends AbstractRepository
 	 * @param array $storagePids
 	 * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
 	 */
-	public function findByRecordIds(array $recordIds, array $storagePids)
+	public function findByUids(array $recordIds, array $storagePids = [])
 	{
 		$query 			= $this->createQuery();
 		$querySettings 	= $query->getQuerySettings();
-		$querySettings->setStoragePageIds($storagePids);
-		$querySettings->setRespectStoragePage(true);
+
+		if(!empty($storagePids))
+		{
+			$querySettings->setStoragePageIds($storagePids);
+			$querySettings->setRespectStoragePage(true);
+		}
+
 		$querySettings->setRespectSysLanguage(true);
 
 		$records = $query->matching(
 			$query->in("uid", $recordIds)
 		)->execute();
 
-		// THIS IS A DIRTY FIX FOR MANUAL SORTING THE RECORDS BY THE INPUT RECORD IDS
-		// I HOPE THIS IS CHANGED SOON BECAUSE IT COSTS A LOT OF SPEED HERE
 		$result = [];
 		foreach($recordIds as $_recordId)
 		{
-		    foreach($records as $_record)
-		        if($_record->getUid() == $_recordId)
-		          $result[] = $_record;
+			foreach($records as $_record)
+				if($_record->getUid() == $_recordId)
+					$result[] = $_record;
 		}
-		
+
 		return $result;
 	}
 
@@ -276,20 +256,10 @@ class RecordRepository extends AbstractRepository
 		$query->statement($statement);
 		$result = $query->execute(true);
 
-		// Apply Sorting
-		/*
-		if(is_numeric($sortField))
-		{
-			usort($result, function ($a, $b) {
-				return $a['sort'] - $b['sort'];
-			});
-		}
+		$dataMapper = GeneralUtility::makeInstance(DataMapper::class);
+		$mapped = $dataMapper->map(Record::class, $result);
 
-		if(is_numeric($sortField) && $sortOrder == QueryInterface::ORDER_DESCENDING)
-			$result=array_reverse($result, true);
-		*/
-			
-		return $result;
+		return $mapped;
 	}
 
 	/**

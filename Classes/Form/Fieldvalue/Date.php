@@ -66,8 +66,11 @@ class Date extends AbstractFieldvalue implements FieldvalueInterface
 	 */
 	protected function _getDateTimeByTimestamp($timestamp)
 	{
-		$date = new \DateTime('@' . $timestamp);
-		$date->setTimezone(new \DateTimeZone($this->getDefaultTimezone()));
+		$defaultTimezone = $this->getDefaultTimezone();
+		date_default_timezone_set($defaultTimezone);
+		$timezone = new \DateTimeZone($defaultTimezone);
+		$date = new \DateTime('@' . $timestamp, $timezone);
+
 		return $date;
 	}
 

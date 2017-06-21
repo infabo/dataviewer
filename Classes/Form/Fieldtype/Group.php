@@ -137,17 +137,13 @@ class Group extends AbstractFieldtype implements FieldtypeInterface
 		if($foreignTable = $this->getField()->getConfig("foreign_table"))
 			$tca["processedTca"]["columns"][$fieldName]["config"]["foreign_table"] = $foreignTable;
 
-		// internal_type == db
-		if($this->getField()->getConfig("internal_type") == "db")
-		{
-			// Suggest Wizard
-			if((bool)$this->getField()->getConfig("suggest_wizard") == true)
-				$tca["processedTca"]["columns"][$fieldName]["config"]["wizards"] = [
-					"suggest" => [
-						"type" => "suggest",
-					],
-				];
-		}	
+		// Suggest Wizard
+		if((bool)$this->getField()->getConfig("suggest_wizard") == true)
+			$tca["processedTca"]["columns"][$fieldName]["config"]["wizards"] = [
+				"suggest" => [
+					"type" => "suggest",
+				],
+			];
 
 		parent::prepareTca($tca);
 	}

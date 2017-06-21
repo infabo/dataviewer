@@ -57,7 +57,7 @@ class Inline extends MultiSelect
 				else 
 				{
 					$id = $_element;
-					$valueArr = BackendUtility::getRecord($foreignTable, $id, $searchFields, "hidden = 0");
+					$valueArr = BackendUtility::getRecord($foreignTable, $id, $searchFields, BackendUtility::BEenableFields($foreignTable), true);
 				}
 
 				if(is_array($valueArr))

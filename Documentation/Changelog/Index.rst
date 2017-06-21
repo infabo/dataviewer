@@ -10,6 +10,24 @@
 Changelog
 ---------
 
+**1.7.6**
+
+- [TASK] Using DataMapper directly in the findByAdvancedConditions Method
+- [TASK] Created ValueFactory for faster generation of the value elements
+- [BUGFIX] Added correct indexes on tx_dataviewer_domain_model_recordvalue
+- [TASK] Created ValueFactory for faster generation of the value elements
+- [BUGFIX] Added correct indexes on tx_dataviewer_domain_model_recordvalue
+- [BUGFIX] Initialization of language in FormController (#15)
+- [BUGFIX] Form Plugin Redirects had a wrong record parameter
+- [TASK] Sorting of Datatype Icons in the Docheader is now made by sorting of Datatypes
+- [BUGFIX] Loading sequence of fields restricted rendering of fluid fields
+- [FEATURE] Variables also can now be created directly in the Record Plugin
+- [FEATURE] Casting/Evaluating Variable Type for GET/POST Variables
+- [FEATURE] Parent Record is now attached on inline records and is available through {record.parent}
+- [BUGFIX] Backend User is now temporarily initialized in the FormController
+- [FEATURE] Added UserFunc for manipulating TypoScript 
+- [TASK] Suggest Wizard for Page Fieldtype
+
 **1.7.5**
 
 - [BUGFIX] Special Inline Elements will now be loaded

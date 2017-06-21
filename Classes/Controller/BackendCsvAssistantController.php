@@ -295,6 +295,8 @@ class BackendCsvAssistantController extends BackendController
 					&$datatype,
 				]
 			);
+			
+			$_fieldArr["pid"] = $this->currentPageId;
 
 			// Main Record Creation from the source of a field array
 			$record = $this->recordFactory->create($_fieldArr, $datatype, false, $importValidationFailed);

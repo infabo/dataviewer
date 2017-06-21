@@ -89,7 +89,7 @@ class ExtTablesInclusion implements \TYPO3\CMS\Core\Database\TableConfigurationP
 		// Get all fields of type select/multiselect with the checkbox Suggest Wizard active
 		// Process the tca of all fields and inject the rendered tca
 		// into the globals
-		$types = ["select","multiselect"];
+		$types = ["select","multiselect","group","page"];
 	
 		// We need to create a dirty try-catch here, since we have nothing better to check for existence of many different needs
 		try {

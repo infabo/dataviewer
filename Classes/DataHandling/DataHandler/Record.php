@@ -79,6 +79,13 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 	protected $tempColumns = [];
 
 	/**
+	 * Id of the main record
+	 *
+	 * @var int
+	 */
+	protected $mainRecordUid = 0;
+
+	/**
 	 * Constructor
 	 *
 	 * @return Record
@@ -298,7 +305,7 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 							$table = "tx_dataviewer_domain_model_record";
 							$destPid = ($field->getConfig("pid_config") > 0)?$field->getConfig("pid_config"):$pid;
 							$exclude = "record_values";
-							
+
 							$newIds = [];
 							foreach($ids as $_id)
 							{
@@ -345,7 +352,7 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 			/* @var RecordValueModel $_recordValue */
 			foreach ( $recordValues as $_recordValue )
 			{
-				if($_recordValue->getField() instanceof FieldModel) 
+				if($_recordValue->getField() instanceof FieldModel)
 				{
 
 					// We need to check the fieldtype to do certain delete behaviours here
@@ -380,7 +387,7 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 			$record->setDeleted(true);
 			$this->recordRepository->update($record);
 		}
-		
+
 		$this->persistenceManager->persistAll();
 
 		// Hook
@@ -402,6 +409,9 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 	public function processDatamap_preProcessFieldArray(&$incomingFieldArray, $table, $id, &$parentObj)
 	{
 		if ($table != "tx_dataviewer_domain_model_record") return;
+
+		if(!$this->mainRecordUid)
+			$this->mainRecordUid = $id;
 
 		// Storing the fieldArray to the session to prefill form values for easier modifying
 		$this->recordValueSessionService->store($id, $incomingFieldArray);
@@ -453,7 +463,7 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 		$this->saveData[$id] = [
 			$incomingFieldArray,
 		];
-		
+
 		// We need to remove all elements from the array where the key is an integer,
 		// so we can remove our custom fields in order to let the save procedure
 		// in combination with the added GLOBALS (for the suggest wizard) removed
@@ -530,6 +540,9 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 		if (isset($this->saveData[$id]) && is_array($this->saveData[$id]))
 		{
 			$recordSaveData = reset($this->saveData[$id]);
+
+			if($id != $this->mainRecordUid)
+				$recordSaveData["parent"] = $this->mainRecordUid;
 
 			$result 		= $this->processRecord($recordSaveData, $record);
 
@@ -617,8 +630,6 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 		return $fieldValidationErrors;
 	}
 
-
-
 	/**
 	 * Transforms the NEW-ID into the
 	 * correct ID if found in Substitute Id Array
@@ -688,6 +699,11 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 		if(!$datatype)
 			return false;
 
+		// Setting the parent record here	
+		if(isset($recordSaveData["parent"]))
+			$record->_setProperty("parent", (int)$recordSaveData["parent"]);
+
+
 		// Refresh record timestamp
 		$record->setTstamp(time());
 
@@ -715,7 +731,7 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 	protected function _processRecordSaveData(RecordModel $record, array $recordSaveData = [])
 	{
 		$datatype = $record->getDatatype();
-		
+
 		// Default reset the record title and store the previous title
 		$previousTitle = $record->getTitle(true);
 		$record->setTitle("");
