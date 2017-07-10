@@ -828,12 +828,16 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 
 				if($field->getType() == "rte")
 				{
+					// Corrections for saving an empty line
+					// This is just for compatibiliy issues to parent saved records
+					if(trim($_value) == "<p>&nbsp;</p>")
+						$_value = "";
+				
 					/* @var \MageDeveloper\Dataviewer\Form\Fieldtype\Rte $fieldtypeModel */
-
 					// Initialize transformation:
 					/* @var RteHtmlParser $parseHTML */
-					$parseHTML = GeneralUtility::makeInstance(RteHtmlParser::class);
-					$parseHTML->init("tt_content" . ':' . "bodytext", $record->getPid()); // We imitate a tt_content bodytext field
+					//$parseHTML = GeneralUtility::makeInstance(RteHtmlParser::class);
+					//$parseHTML->init("tt_content" . ':' . "bodytext", $record->getPid()); // We imitate a tt_content bodytext field
 					// Perform transformation:
 					//$_value = $parseHTML->RTE_transform($_value, [], 'db', []);
 				}
@@ -954,7 +958,7 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 
 		// FieldType Text can overwrite the record title, so it can be inactive
 		if ($field->getIsRecordTitle() && (strlen($value) < 250))
-			$record->appendTitle($value);
+			$record->appendTitle($valueContent);
 
 		return true;
 	}

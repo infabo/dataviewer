@@ -40,7 +40,7 @@ class Rte extends Text
 	{
 		$fieldName 					= $this->getField()->getUid();
 		$tableName 					= "tx_dataviewer_domain_model_record";
-		$value 						= $this->getValue();
+		$value 						= trim($this->getValue());
 		$databaseRow 				= $this->getDatabaseRow();
 		$databaseRow[$fieldName] 	= $value;
 
