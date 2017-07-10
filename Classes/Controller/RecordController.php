@@ -146,20 +146,29 @@ class RecordController extends AbstractController
 		$this->pluginCacheService->setValidRecordIds($cacheIdentifier, $ids);
 		$this->sessionServiceContainer->getInjectorSessionService()->setActiveRecordIds($ids);
 
-
-		$templateSwitch = $this->getTemplateSwitch();
-		if($templateSwitch)
-			$this->view->setTemplatePathAndFilename($templateSwitch);
-
-		$this->view->assign($this->listSettingsService->getRecordsVarName(), $selectedRecords);
-		$this->view->assign("cached", $cached);
-		$this->view->assign("cacheIdentifier", $cacheIdentifier);
-
 		// Custom Headers
 		$customHeaders = $this->getCustomHeaders();
 		$this->performCustomHeaders($customHeaders);
 
-		$rendered = $this->view->render();
+		if($this->settings["template_selection"] == "FLUID")
+		{
+			$view = $this->view;
+			$source = $this->settings["fluid_code"];
+			$view->setTemplateSource($source);
+		}
+		else
+		{
+			$view = $this->getStandaloneView(true);
+			$templateSwitch = $this->getTemplateSwitch();
+			if($templateSwitch)
+				$view->setTemplatePathAndFilename($templateSwitch);
+		}
+
+		$view->assign($this->listSettingsService->getRecordsVarName(), $selectedRecords);
+		$view->assign("cached", $cached);
+		$view->assign("cacheIdentifier", $cacheIdentifier);
+
+		$rendered = $view->render();
 
 		if($this->listSettingsService->renderOnlyTemplate() && !$this->listSettingsService->isDebug())
 		{
@@ -294,21 +303,36 @@ class RecordController extends AbstractController
 		if ($record->getDatatype()->getTemplatefile() && !$this->listSettingsService->isDebug())
 			$this->view->setTemplatePathAndFilename($record->getDatatype()->getTemplatefile());
 
-		$templateSwitch = $this->getTemplateSwitch();
-		if($templateSwitch)
-			$this->view->setTemplatePathAndFilename($templateSwitch);
-
-		$this->view->assign($this->listSettingsService->getRecordVarName(), $record);
-
 		// Custom Headers
 		$customHeaders = $this->getCustomHeaders();
 		$this->performCustomHeaders($customHeaders);
 
+		if($this->settings["template_selection"] == "FLUID")
+		{
+			$view = $this->view;
+
+			$source = $this->settings["fluid_code"];
+			$view->setTemplateSource($source);
+		}
+		else
+		{
+			$view = $this->getStandaloneView(true);
+
+			$templateSwitch = $this->getTemplateSwitch();
+			if($templateSwitch)
+				$view->setTemplatePathAndFilename($templateSwitch);
+		}
+
+		// Assigning the record to the view	
+		$view->assign($this->listSettingsService->getRecordVarName(), $record);
+
 		if($this->listSettingsService->renderOnlyTemplate() && !$this->listSettingsService->isDebug())
 		{
-			echo $this->view->render();
+			echo $view->render();
 			exit();
 		}
+
+		return $view->render();
 	}
 
 	/**
