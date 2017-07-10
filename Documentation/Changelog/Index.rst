@@ -10,6 +10,17 @@
 Changelog
 ---------
 
+**2.0.2**
+
+- [BUGFIX] Inline Elements won't work
+
+**2.0.1**
+
+- [BUGFIX] Tab corrections for inline elements
+- [TASK] Compatibility to TYPO3 8 LTS 8.7.2
+- [TASK] Usage of ConnectionPool in Database UserFunc
+- [TASK] Better Record Title creation
+
 **2.0.0**
 
 - [TASK] Merged from Github Branch master-7 -> 1.7.5
