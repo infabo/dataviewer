@@ -160,8 +160,9 @@ class PrepareDataviewerTca implements FormDataProviderInterface
 			if($datatype instanceof Datatype && $record instanceof Record)
 				$this->prepareProcessedTca($result, $datatype, $record);
 
+            $result['inlineCompileExistingChildren'] = false;
 		}
-
+		
 		return $result;
 	}
 
@@ -176,12 +177,12 @@ class PrepareDataviewerTca implements FormDataProviderInterface
 	public function prepareProcessedTca(&$result, Datatype $datatype, Record $record)
 	{
 		$fields = $datatype->getFields();
-
+		
 		foreach ($fields as $_field)
 		{
 			/* @var Field $_field */
 			$fieldId = $_field->getUid();
-
+			
 			// We retrieve the fieldtype configuration
 			$fieldtypeConfig = $this->fieldtypeSettingsService->getFieldtypeConfiguration($_field->getType());
 			$fieldClass      = $fieldtypeConfig->getFieldClass();
@@ -197,7 +198,7 @@ class PrepareDataviewerTca implements FormDataProviderInterface
 				$result["processedTca"]["columns"][$fieldId] = $tca["processedTca"]["columns"][$fieldId];
 			}
 		}
-
+		
 		return;
 	}
 
