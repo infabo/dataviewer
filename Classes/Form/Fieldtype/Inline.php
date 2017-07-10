@@ -38,8 +38,12 @@ class Inline extends AbstractFieldtype implements FieldtypeInterface
 		$this->formDataProviders[] = \TYPO3\CMS\Backend\Form\FormDataProvider\TcaInlineExpandCollapseState::class;
 		$this->formDataProviders[] = \TYPO3\CMS\Backend\Form\FormDataProvider\TcaInlineConfiguration::class;
 		$this->formDataProviders[] = \TYPO3\CMS\Backend\Form\FormDataProvider\TcaRecordTitle::class;
-		$this->formDataProviders[] = \TYPO3\CMS\Backend\Form\FormDataProvider\TcaInline::class;
-
+		
+		// We need to add TcaInline to the data providers, if we are not in ajax context
+		if (!$_SERVER['HTTP_X_REQUESTED_WITH'] || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) != 'xmlhttprequest' ) {
+			$this->formDataProviders[] = \TYPO3\CMS\Backend\Form\FormDataProvider\TcaInline::class;
+		}
+		
 		parent::initializeFormDataProviders();
 	}
 	
