@@ -4,6 +4,7 @@ namespace MageDeveloper\Dataviewer\UserFunc;
 use MageDeveloper\Dataviewer\Utility\DebugUtility;
 use MageDeveloper\Dataviewer\Utility\LocalizationUtility as Locale;
 use MageDeveloper\Dataviewer\Utility\IconUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -67,19 +68,20 @@ class Database
 		$label = Locale::translate("flexform.please_select", \MageDeveloper\Dataviewer\Configuration\ExtensionConfiguration::EXTENSION_KEY);
 		$options[] = ["label" => $label, 0 => $label, 1 => ""];
 
-		$res = $GLOBALS['TYPO3_DB']->sql_query("SHOW TABLES");
+		/* @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
+		$query = GeneralUtility::makeInstance(ConnectionPool::class)
+			->getConnectionForTable("tt_content");
 
-		if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) > 0)
+		$tables = $query->fetchAll("SHOW TABLES");
+		
+		foreach($tables as $_table)
 		{
-			while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))
-			{
-				$tablename = end($row);
-				$options[] = ["label" => $tablename, 
-							  0 => $tablename, 
-							  1 => $tablename];
-			}
+			$tableName = reset($_table);
+			$options[] = ["label" => $tableName,
+						  0 => $tableName,
+						  1 => $tableName];
 		}
-
+		
 		$config["items"] = $options;
 
 		return $config;
@@ -94,25 +96,26 @@ class Database
 	 */
 	public function populateColumnsAction(array &$config, &$parentObject)
 	{
-		$tablename = reset($config["row"]["table_content"]);
+		$tableName = reset($config["row"]["table_content"]);
 
 		$options = [];
 
-		if ($tablename)
+		if ($tableName)
 		{
-			$res = $GLOBALS['TYPO3_DB']->sql_query("SHOW COLUMNS FROM {$tablename}");
+			/* @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
+			$query = GeneralUtility::makeInstance(ConnectionPool::class)
+				->getConnectionForTable("tt_content");
 
-			if ($GLOBALS['TYPO3_DB']->sql_num_rows($res) > 0)
+			$columns = $query->fetchAll("SHOW COLUMNS FROM {$tableName}");
+			
+			foreach($columns as $_column)
 			{
-				while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))
-				{
-					$field = $row["Field"];
-					$options[] = ["label" => $field, 
-								  0 => $field, 
-								  1 => $field];
-				}
+				$field = $_column["Field"];
+				$options[] = ["label" => $field,
+							  0 => $field,
+							  1 => $field];
 			}
-
+			
 		}
 
 		$config["items"] = $options;
