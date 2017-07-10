@@ -14,6 +14,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentNameException;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
+use TYPO3\CMS\Core\Charset\CharsetConverter;
 
 /**
  * MageDeveloper Dataviewer Extension
@@ -118,10 +119,14 @@ class FormController extends AbstractController
 	{
 		$templateFile = $this->formSettingsService->getTemplateOverride();
 		$template = GeneralUtility::getFileAbsFileName($templateFile);
-		
+
 		if(!$record instanceof Record)
 			$record = $this->_getNewRecord();
-		
+
+        // Retrieving possible previous stored form post data
+        $post = $this->sessionService->getFormPost($post);
+
+        $this->view->assign("session", $post);
 		$this->view->assign("datatype", $record->getDatatype());
 		$this->view->assign("template", $template);
 		$this->view->assign("record", $record);
@@ -171,6 +176,10 @@ class FormController extends AbstractController
 
 		// We perform the normal post action for the new or existing record
 		$post = $_POST;
+
+        // Storing the validated POST to the users session
+        $this->sessionService->setFormPost($post);
+
 		$fieldArray = $this->traverseFieldArray($post);
 
 		/////////////////////////
@@ -200,10 +209,10 @@ class FormController extends AbstractController
 			foreach($validationErrors as $_title=>$_errors)
 				foreach($_errors as $_error)
 					$this->addFlashMessage($_error->getMessage(), $_title, AbstractMessage::ERROR);
-		
+
 			$this->forward("index", null, null, ["record" => $record]);
 		}
-		
+
 		////////////////////////////////////
 		// Signal-Slot 'preProcessRecord' //
 		////////////////////////////////////
@@ -241,7 +250,7 @@ class FormController extends AbstractController
 		
 		$this->persistenceManager->persistAll();
 
-		$actionName = "index";
+		$actionName = (is_null($redirectPid))?"index":"dynamicDetail";
 		$controllerName = (is_null($redirectPid))?null:"Record";
 		$extensionName = null;
 		$arguments = ["record" => $record];
