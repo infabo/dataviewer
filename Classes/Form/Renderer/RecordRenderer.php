@@ -286,7 +286,7 @@ class RecordRenderer extends AbstractRenderer implements RendererInterface
 			implode("\r\n", $topParts)							.
 			"<div class=\"dataviewer-content\">"				.
 			$contentHtml 										.
-			$this->renderTabMenu($tabConfigurationArray, "dataviewer-tabs")	.
+			$this->renderTabMenu($tabConfigurationArray, "dataviewer-tabs-{$recordUid}")	.
 			"</div>"											.
 			implode("\r\n", $bottomParts)						.
 			//$this->formResultCompiler->printNeededJSFunctions()	.
