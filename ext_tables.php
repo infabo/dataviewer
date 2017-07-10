@@ -159,14 +159,14 @@ $GLOBALS["TCA"]["tt_content"]["types"]["list"]["subtypes_addlist"][$pluginSigPi8
 /***********************************
  * CMS Layout Hook
  ***********************************/
-$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi1][$_EXTKEY] = "EXT:" . $_EXTKEY . "/Classes/CmsLayout/Record.php:MageDeveloper\\Dataviewer\\CmsLayout\\Record->getBackendPluginLayout";
-$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi2][$_EXTKEY] = "EXT:" . $_EXTKEY . "/Classes/CmsLayout/Search.php:MageDeveloper\\Dataviewer\\CmsLayout\\Search->getBackendPluginLayout";
-$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi3][$_EXTKEY] = "EXT:" . $_EXTKEY . "/Classes/CmsLayout/Letter.php:MageDeveloper\\Dataviewer\\CmsLayout\\Letter->getBackendPluginLayout";
-$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi4][$_EXTKEY] = "EXT:" . $_EXTKEY . "/Classes/CmsLayout/Sort.php:MageDeveloper\\Dataviewer\\CmsLayout\\Sort->getBackendPluginLayout";
-$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi5][$_EXTKEY] = "EXT:" . $_EXTKEY . "/Classes/CmsLayout/Filter.php:MageDeveloper\\Dataviewer\\CmsLayout\\Filter->getBackendPluginLayout";
-$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi6][$_EXTKEY] = "EXT:" . $_EXTKEY . "/Classes/CmsLayout/Select.php:MageDeveloper\\Dataviewer\\CmsLayout\\Select->getBackendPluginLayout";
-$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi7][$_EXTKEY] = "EXT:" . $_EXTKEY . "/Classes/CmsLayout/Form.php:MageDeveloper\\Dataviewer\\CmsLayout\\Form->getBackendPluginLayout";
-$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi8][$_EXTKEY] = "EXT:" . $_EXTKEY . "/Classes/CmsLayout/Pager.php:MageDeveloper\\Dataviewer\\CmsLayout\\Pager->getBackendPluginLayout";
+$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi1][$_EXTKEY] = "MageDeveloper\\Dataviewer\\CmsLayout\\Record->getBackendPluginLayout";
+$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi2][$_EXTKEY] = "MageDeveloper\\Dataviewer\\CmsLayout\\Search->getBackendPluginLayout";
+$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi3][$_EXTKEY] = "MageDeveloper\\Dataviewer\\CmsLayout\\Letter->getBackendPluginLayout";
+$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi4][$_EXTKEY] = "MageDeveloper\\Dataviewer\\CmsLayout\\Sort->getBackendPluginLayout";
+$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi5][$_EXTKEY] = "MageDeveloper\\Dataviewer\\CmsLayout\\Filter->getBackendPluginLayout";
+$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi6][$_EXTKEY] = "MageDeveloper\\Dataviewer\\CmsLayout\\Select->getBackendPluginLayout";
+$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi7][$_EXTKEY] = "MageDeveloper\\Dataviewer\\CmsLayout\\Form->getBackendPluginLayout";
+$GLOBALS["TYPO3_CONF_VARS"]["SC_OPTIONS"]["cms/layout/class.tx_cms_layout.php"]["list_type_Info"][$pluginSigPi8][$_EXTKEY] = "MageDeveloper\\Dataviewer\\CmsLayout\\Pager->getBackendPluginLayout";
 
 /***********************************
  * Backend CSS File Include
@@ -351,8 +351,8 @@ if (TYPO3_MODE === "BE")
 	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
 		"MageDeveloper.".$_EXTKEY,
 		"web",          			// Main area
-		"dataviewer",         		// Name of the module
-		"",             			// Position of the module
+		"dataviewer",         	// Name of the module
+		"",             				// Position of the module
 		[   	        			// Allowed controller action combinations
 			"BackendModule" => "index, records, datatypes, datatypesDetails, recordsDetails, createRecord",
 			"BackendCsvAssistant" => "index, page, datatype, file, assign, import, review",
@@ -363,12 +363,6 @@ if (TYPO3_MODE === "BE")
 			"labels" 	=> "LLL:EXT:dataviewer/Resources/Private/Language/locallang.xlf",
 		]
 	);
-
-	$GLOBALS["TYPO3_CONF_VARS"]["EXTCONF"]["cms"]["db_layout"]["addTables"]["tx_dataviewer_domain_model_record"][] = [
-		"MENU" => "",
-		"fList" => "title, datatype",
-		"icon" => true,
-	];
 
 }
 
