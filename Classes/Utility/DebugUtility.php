@@ -20,7 +20,7 @@ class DebugUtility
 {
 	/**
 	 * Gets a standalone view instance
-	 * 
+	 *
 	 * @return StandaloneView
 	 */
 	public static function getStandaloneView()
@@ -42,11 +42,11 @@ class DebugUtility
 	{
 		$view = self::getStandaloneView();
 		$view->assign("variable", $variable);
-		
+
 		$titleAttr = "";
 		if(!is_null($title))
 			$titleAttr = "title=\"{$title}\"";
-		
+
 		$source = "<f:debug inline=\"1\" {$titleAttr}>{variable}</f:debug>";
 		$rendered = $view->renderSource($source);
 		return $rendered;
@@ -56,18 +56,22 @@ class DebugUtility
 	 * Logs content to a file that will be created in
 	 * the root of the instance and has the current date
 	 * in its name
-	 * 
+	 *
 	 * @param string $content
+	 * @param string $customIdentfier
 	 * @param bool $clear Clear the file before write
 	 * @return void
 	 */
-	public static function log($content, $clear = false)
+	public static function log($content, $customIdentfier = null, $clear = false)
 	{
-		$file = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName("".date("Y-m-d")."_dataviewer.log");
+		if(is_null($customIdentfier))
+			$customIdentfier = date("Y-m-d")."_dataviewer";
+
+		$file = \TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName("".$customIdentfier.".log");
 
 		if($clear == true)
 			file_put_contents($file, "");
-	
+
 		$dateStr = date("Y-m-d H:i:s");
 		file_put_contents($file, "___[{$dateStr}]___".str_repeat("_", 20)."\r\n", FILE_APPEND);
 		file_put_contents($file, $content."\r\n", FILE_APPEND);
