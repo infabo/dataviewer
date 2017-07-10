@@ -10,6 +10,10 @@
 Changelog
 ---------
 
+**1.7.7**
+
+- [BUGFIX] Tab corrections for inline elements
+
 **1.7.6**
 
 - [TASK] Using DataMapper directly in the findByAdvancedConditions Method
