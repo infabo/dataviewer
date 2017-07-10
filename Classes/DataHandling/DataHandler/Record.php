@@ -949,7 +949,7 @@ class Record extends AbstractDataHandler implements DataHandlerInterface
 
 		// FieldType Text can overwrite the record title, so it can be inactive
 		if ($field->getIsRecordTitle() && (strlen($value) < 250))
-			$record->appendTitle($value);
+			$record->appendTitle($valueContent);
 
 		return true;
 	}
